@@ -1,0 +1,40 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary';
+  target?: '_blank' | '_self' | '_parent' | '_top';
+  rel?: string;
+  download?: string | boolean;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  target,
+  rel,
+  download,
+  type = 'button',
+  class: className = '',
+} = Astro.props;
+
+const classes = [
+  variant === 'primary' ? 'btn-primary' : 'btn-secondary',
+  className,
+].filter(Boolean).join(' ');
+
+const resolvedRel = target === '_blank' ? rel ?? 'noreferrer noopener' : rel;
+---
+
+{
+  href ? (
+    <a href={href} target={target} rel={resolvedRel} download={download} class={classes}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class={classes}>
+      <slot />
+    </button>
+  )
+}

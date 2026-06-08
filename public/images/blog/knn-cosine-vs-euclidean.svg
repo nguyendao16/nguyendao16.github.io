@@ -1,0 +1,18 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">KNN distance comparison placeholder</title>
+  <desc id="desc">A simple chart-style illustration showing cosine and Euclidean neighbor behavior.</desc>
+  <rect width="1600" height="900" fill="#F2F4F6"/>
+  <rect x="120" y="120" width="1360" height="660" rx="28" fill="#FFFFFF" stroke="#C4C6CD"/>
+  <path d="M220 680C340 560 420 530 520 490C650 440 760 410 900 360C1050 305 1160 280 1340 220" stroke="#475569" stroke-width="14" stroke-linecap="round"/>
+  <path d="M220 260C320 330 430 390 530 430C640 470 770 520 910 560C1060 605 1180 620 1340 650" stroke="#8EA2BE" stroke-width="14" stroke-linecap="round" stroke-dasharray="18 18"/>
+  <circle cx="360" cy="580" r="28" fill="#303E51"/>
+  <circle cx="520" cy="500" r="28" fill="#565E74"/>
+  <circle cx="680" cy="440" r="28" fill="#4D3A1C"/>
+  <circle cx="850" cy="380" r="28" fill="#303E51"/>
+  <circle cx="1020" cy="320" r="28" fill="#565E74"/>
+  <circle cx="1190" cy="270" r="28" fill="#4D3A1C"/>
+  <text x="180" y="180" fill="#191C1E" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="600">Cosine vs Euclidean</text>
+  <text x="180" y="230" fill="#44474C" font-family="Inter, Arial, sans-serif" font-size="26">Placeholder cover image for the blog sample post</text>
+  <text x="220" y="770" fill="#475569" font-family="Inter, Arial, sans-serif" font-size="26">Cosine similarity</text>
+  <text x="220" y="820" fill="#8EA2BE" font-family="Inter, Arial, sans-serif" font-size="26">Euclidean distance</text>
+</svg>

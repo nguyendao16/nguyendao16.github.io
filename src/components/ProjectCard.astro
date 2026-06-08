@@ -1,0 +1,111 @@
+---
+import Button from './Button.astro';
+import Tag from './Tag.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  problemStatement?: string;
+  techStack?: string[];
+  metrics?: Array<{ label: string; value: string }>;
+  githubUrl?: string;
+  demoUrl?: string;
+  image: string;
+  imageAlt: string;
+  href?: string;
+  tags?: string[];
+}
+
+const {
+  title,
+  description,
+  problemStatement,
+  techStack = [],
+  metrics = [],
+  githubUrl,
+  demoUrl,
+  image,
+  imageAlt,
+  href = githubUrl ?? '#',
+  tags = [],
+} = Astro.props;
+---
+
+<article class="card overflow-hidden">
+  <div class="grid lg:grid-cols-[0.9fr_1.1fr]">
+    <div class="order-1">
+      <a href={href} class="block h-full" aria-label={`Open ${title}`}>
+        <img
+          src={image}
+          alt={imageAlt}
+          class="aspect-[16/10] h-full w-full object-cover lg:aspect-auto lg:min-h-full"
+        />
+      </a>
+    </div>
+
+    <div class="order-2 flex flex-col gap-5 p-5 sm:p-6">
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          {tags.map((tag) => <Tag>{tag}</Tag>)}
+        </div>
+        <div class="space-y-2">
+          <h3 class="font-heading text-headline-sm font-medium tracking-tight">
+            <a href={href} class="transition-colors duration-150 hover:text-action">
+              {title}
+            </a>
+          </h3>
+          <p class="text-body-md text-ink-muted">{description}</p>
+        </div>
+      </div>
+
+      {(problemStatement || techStack.length || metrics.length || githubUrl || demoUrl) && (
+        <>
+          {problemStatement && (
+            <div class="space-y-2">
+              <p class="text-label-sm uppercase text-ink-subtle">Problem statement</p>
+              <p class="text-body-md text-ink-muted">{problemStatement}</p>
+            </div>
+          )}
+
+          {techStack.length > 0 && (
+            <div class="space-y-2">
+              <p class="text-label-sm uppercase text-ink-subtle">Tech stack</p>
+              <div class="flex flex-wrap gap-2">
+                {techStack.map((tech) => <Tag tone="accent">{tech}</Tag>)}
+              </div>
+            </div>
+          )}
+
+          {metrics.length > 0 && (
+            <div class="space-y-2">
+              <p class="text-label-sm uppercase text-ink-subtle">Metrics / results</p>
+              <div class="grid gap-3 sm:grid-cols-2">
+                {metrics.map((metric) => (
+                  <div class="rounded-card border border-outline-variant bg-surface-container-low p-4">
+                    <p class="text-label-sm text-ink-subtle">{metric.label}</p>
+                    <p class="mt-1 font-heading text-xl font-medium tracking-tight text-ink">{metric.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(githubUrl || demoUrl) && (
+            <div class="flex flex-col gap-3 sm:flex-row">
+              {githubUrl && (
+                <Button href={githubUrl} variant="secondary" target="_blank">
+                  GitHub
+                </Button>
+              )}
+              {demoUrl && (
+                <Button href={demoUrl} target="_blank">
+                  Demo
+                </Button>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  </div>
+</article>

@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import BlogPostLayout from '../../layouts/BlogPostLayout.astro';
+import { estimateReadingTime, getAdjacentBlogPosts, getPublishedBlogPosts } from '../../utils/blog';
+
+export async function getStaticPaths() {
+  const posts = getPublishedBlogPosts(await getCollection('blog'));
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post, posts },
+  }));
+}
+
+const { post, posts } = Astro.props;
+const { Content, headings } = await post.render();
+const readingTime = estimateReadingTime(post.body);
+const { previous, next } = getAdjacentBlogPosts(posts, post.slug);
+---
+
+<BlogPostLayout
+  title={post.data.seoTitle ?? post.data.title}
+  description={post.data.seoDescription ?? post.data.description}
+  date={post.data.date}
+  updatedDate={post.data.updatedDate}
+  tags={post.data.tags}
+  coverImage={post.data.coverImage}
+  readingTime={readingTime}
+  headings={headings}
+  previous={previous}
+  next={next}
+>
+  <Content />
+</BlogPostLayout>

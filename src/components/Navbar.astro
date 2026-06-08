@@ -1,0 +1,76 @@
+---
+import Button from './Button.astro';
+import SocialLink from './SocialLink.astro';
+import { navigation } from '../data/navigation';
+import { profile } from '../data/profile';
+---
+
+<header class="surface-panel border-b border-outline-variant">
+  <div class="site-container">
+    <div class="flex items-center justify-between py-4 lg:hidden">
+      <a href="/" class="font-heading text-sm font-medium tracking-tight sm:text-base">
+        AI CV Portfolio
+      </a>
+
+      <details class="group relative">
+        <summary
+          class="flex h-10 w-10 items-center justify-center rounded-button border border-outline-variant bg-surface-container-lowest text-ink-muted shadow-soft transition-colors duration-150 hover:bg-surface-container-low"
+        >
+          <span class="sr-only">Open primary navigation</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5 fill-none stroke-current stroke-[1.8]">
+            <path d="M4 6h16" />
+            <path d="M4 12h16" />
+            <path d="M4 18h16" />
+          </svg>
+        </summary>
+
+        <div class="mobile-menu absolute right-0 z-20 mt-3 hidden w-72 rounded-card border border-outline-variant bg-surface-container-lowest p-4 shadow-panel sm:w-80">
+          <nav aria-label="Primary navigation" class="flex flex-col gap-1">
+            {navigation.map((item) => (
+              <a
+                href={item.href}
+                class="rounded-button px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-container-low hover:text-ink"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div class="mt-4 grid gap-2 border-t border-outline-variant pt-4">
+            <a href={`mailto:${profile.email}`} class="link-muted text-sm">
+              {profile.email}
+            </a>
+            <a href={profile.githubUrl} class="link-muted text-sm">
+              GitHub
+            </a>
+            <a href={profile.linkedinUrl} class="link-muted text-sm">
+              LinkedIn
+            </a>
+            <Button href="/contact" variant="primary" class="mt-2 w-full justify-center">
+              Liên hệ
+            </Button>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="hidden items-center justify-between py-4 lg:flex">
+      <a href="/" class="font-heading text-base font-medium tracking-tight">
+        AI CV Portfolio
+      </a>
+
+      <nav aria-label="Primary navigation" class="flex items-center gap-8 text-sm font-medium text-ink-muted">
+        {navigation.map((item) => (
+          <a class="link-muted" href={item.href}>
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <SocialLink href={`mailto:${profile.email}`} kind="email" label={`Email ${profile.email}`} iconOnly />
+        <SocialLink href={profile.githubUrl} kind="github" label="GitHub" iconOnly />
+      </div>
+    </div>
+  </div>
+</header>

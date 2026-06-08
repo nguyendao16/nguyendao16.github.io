@@ -1,0 +1,58 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  kind?: 'email' | 'github' | 'linkedin' | 'external';
+  target?: '_blank' | '_self' | '_parent' | '_top';
+  rel?: string;
+  iconOnly?: boolean;
+}
+
+const {
+  href,
+  label,
+  kind = 'external',
+  target,
+  rel,
+  iconOnly = false,
+} = Astro.props;
+
+const externalTarget = href.startsWith('mailto:') ? undefined : target ?? '_blank';
+const resolvedRel = externalTarget === '_blank' ? rel ?? 'noreferrer noopener' : rel;
+const baseClasses = iconOnly
+  ? 'inline-flex h-10 w-10 items-center justify-center rounded-button border border-outline-variant bg-surface-container-lowest text-ink-muted transition-colors duration-150 hover:bg-surface-container-low hover:text-ink'
+  : 'inline-flex items-center gap-2 rounded-button border border-outline-variant bg-surface-container-lowest px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-container-low hover:text-ink';
+---
+
+<a
+  href={href}
+  target={externalTarget}
+  rel={resolvedRel}
+  aria-label={label}
+  class={baseClasses}
+>
+  {kind === 'email' && (
+    <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4 fill-none stroke-current stroke-[1.8]">
+      <path d="M4 6h16v12H4z" />
+      <path d="m4 7 8 6 8-6" />
+    </svg>
+  )}
+  {kind === 'github' && (
+    <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4 fill-current">
+      <path d="M12 .5C5.73.5.75 5.69.75 12.08c0 5.12 3.29 9.46 7.86 10.99.58.11.79-.26.79-.58v-2.03c-3.2.72-3.87-1.59-3.87-1.59-.52-1.37-1.27-1.74-1.27-1.74-1.04-.74.08-.73.08-.73 1.16.09 1.77 1.23 1.77 1.23 1.03 1.81 2.71 1.29 3.37.99.11-.77.4-1.29.73-1.59-2.56-.3-5.25-1.32-5.25-5.89 0-1.3.45-2.36 1.18-3.19-.12-.3-.51-1.51.11-3.15 0 0 .96-.31 3.14 1.22a10.42 10.42 0 0 1 5.72 0c2.18-1.53 3.14-1.22 3.14-1.22.62 1.64.23 2.85.11 3.15.73.83 1.18 1.89 1.18 3.19 0 4.58-2.69 5.59-5.25 5.89.41.36.78 1.08.78 2.18v3.23c0 .32.21.69.8.57 4.56-1.53 7.84-5.87 7.84-10.99C23.25 5.69 18.27.5 12 .5Z" />
+    </svg>
+  )}
+  {kind === 'linkedin' && (
+    <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4 fill-current">
+      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.05-1.86-3.05-1.87 0-2.15 1.46-2.15 2.96v5.66H9.32V9h3.42v1.56h.05c.48-.91 1.66-1.86 3.4-1.86 3.64 0 4.31 2.39 4.31 5.5v6.25ZM5.34 7.44a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.01H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z" />
+    </svg>
+  )}
+  {kind === 'external' && (
+    <svg aria-hidden="true" viewBox="0 0 24 24" class="h-4 w-4 fill-none stroke-current stroke-[1.8]">
+      <path d="M14 5h5v5" />
+      <path d="M10 14 19 5" />
+      <path d="M19 14v5H5V5h5" />
+    </svg>
+  )}
+  {iconOnly ? <span class="sr-only">{label}</span> : <span>{label}</span>}
+</a>

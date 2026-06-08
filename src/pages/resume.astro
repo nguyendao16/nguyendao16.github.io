@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+import Tag from '../components/Tag.astro';
+import { profile } from '../data/profile';
+---
+
+<BaseLayout title="Resume" description="Downloadable CV and selected highlights.">
+  <Section
+    title="Resume"
+    description="Download the PDF or review the key points that appear in the portfolio summary."
+  >
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+      <Button href="/resume/resume.pdf" download="resume.pdf">Download PDF</Button>
+      <Button href="/contact" variant="secondary">Contact</Button>
+    </div>
+  </Section>
+
+  <Section title="Key highlights">
+    <div class="mt-6 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+      <div class="card-muted p-5 sm:p-6">
+        <p class="text-label-sm uppercase text-ink-subtle">Summary</p>
+        <ul class="mt-4 space-y-3 text-body-md text-ink-muted">
+          {profile.resumeHighlights.map((item) => (
+            <li class="flex gap-3">
+              <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink-subtle"></span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="card overflow-hidden">
+        <iframe
+          src="/resume/resume.pdf"
+          title="Resume PDF preview"
+          class="h-[36rem] w-full border-0 bg-surface-container-lowest sm:h-[42rem]"
+        ></iframe>
+      </div>
+    </div>
+  </Section>
+
+  <Section title="Selected tags">
+    <div class="mt-6 flex flex-wrap gap-2">
+      <Tag>Machine learning</Tag>
+      <Tag>Computer vision</Tag>
+      <Tag>Evaluation</Tag>
+      <Tag>Technical writing</Tag>
+    </div>
+  </Section>
+</BaseLayout>

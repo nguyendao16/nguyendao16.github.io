@@ -1,0 +1,29 @@
+---
+import SocialLink from './SocialLink.astro';
+import { profile } from '../data/profile';
+---
+
+<footer class="surface-panel border-t border-outline-variant">
+  <div class="site-container py-6 sm:py-8">
+    <div class="flex flex-col gap-4 border-b border-outline-variant pb-6 sm:gap-6 md:flex-row md:items-center md:justify-between">
+      <div>
+        <p class="font-heading text-sm font-medium tracking-tight sm:text-base">
+          AI CV Portfolio
+        </p>
+        <p class="mt-2 text-sm text-ink-muted">
+          Machine learning and computer vision portfolio for recruiters and collaborators.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <SocialLink href={`mailto:${profile.email}`} kind="email" label={profile.email} />
+        <SocialLink href={profile.githubUrl} kind="github" label="GitHub" />
+        <SocialLink href={profile.linkedinUrl} kind="linkedin" label="LinkedIn" />
+      </div>
+    </div>
+
+    <div class="pt-4 text-xs text-ink-muted sm:text-sm">
+      <p>&copy; 2026 AI CV Portfolio. All rights reserved.</p>
+    </div>
+  </div>
+</footer>

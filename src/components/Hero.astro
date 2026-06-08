@@ -1,0 +1,58 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description: string;
+  desktopImage: string;
+  desktopAlt: string;
+  mobileImage?: string;
+  mobileAlt?: string;
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  description,
+  desktopImage,
+  desktopAlt,
+  mobileImage = desktopImage,
+  mobileAlt = desktopAlt,
+  class: className = '',
+} = Astro.props;
+---
+
+<section class:list={['site-container py-8 sm:py-12 lg:py-16', className]}>
+  <div class="grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+    <div class="order-2 text-center lg:order-1 lg:text-left">
+      {eyebrow && (
+        <p class="inline-flex items-center gap-2 rounded-pill border border-outline-variant bg-surface-container-low px-3 py-1 font-mono text-label-sm text-ink-muted">
+          <span class="h-1.5 w-1.5 rounded-full bg-ink-subtle"></span>
+          {eyebrow}
+        </p>
+      )}
+      <h1 class="mt-4 max-w-3xl font-heading text-display-lg-mobile font-bold leading-display-mobile text-balance lg:text-display-lg lg:leading-display">
+        {title}
+      </h1>
+      <p class="mx-auto mt-5 max-w-2xl text-body-md text-ink-muted lg:mx-0 lg:text-body-lg">
+        {description}
+      </p>
+      <div class="mt-8">
+        <slot />
+      </div>
+    </div>
+
+    <div class="order-1 lg:order-2">
+      <div class="card overflow-hidden">
+        <picture>
+          <source media="(min-width: 1024px)" srcset={desktopImage} />
+          <img
+            src={mobileImage}
+            alt={mobileAlt}
+            class="aspect-[4/3] w-full object-cover lg:aspect-[16/10]"
+          />
+        </picture>
+      </div>
+    </div>
+  </div>
+</section>

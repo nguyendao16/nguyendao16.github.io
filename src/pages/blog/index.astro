@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import Section from '../../components/Section.astro';
+import { formatBlogDate, getPublishedBlogPosts } from '../../utils/blog';
+
+const posts = getPublishedBlogPosts(await getCollection('blog'));
+---
+
+<BaseLayout
+  title="Blog"
+  description="Technical notes, project writeups, and machine learning articles."
+>
+  <Section
+    eyebrow="Blog"
+    title="Technical writing and project notes"
+    description="A compact archive of implementation notes, experiments, and technical explainers."
+  >
+    <div class="mt-10 space-y-6">
+      {posts.length > 0 ? (
+        posts.map((post) => (
+          <BlogCard
+            title={post.data.title}
+            description={post.data.description}
+            date={formatBlogDate(post.data.date)}
+            href={`/blog/${post.slug}/`}
+            tags={post.data.tags}
+          />
+        ))
+      ) : (
+        <div class="card-muted p-6 text-sm text-ink-muted">
+          Blog posts will appear here once they are added to <code>src/content/blog</code>.
+        </div>
+      )}
+    </div>
+  </Section>
+</BaseLayout>

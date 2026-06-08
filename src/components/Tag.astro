@@ -1,0 +1,21 @@
+---
+interface Props {
+  children: any;
+  tone?: 'neutral' | 'accent';
+  class?: string;
+}
+
+const { children, tone = 'neutral', class: className = '' } = Astro.props;
+
+const baseClasses =
+  'inline-flex items-center rounded-pill border px-3 py-1 font-mono text-label-sm font-medium transition-colors duration-150';
+
+const toneClasses =
+  tone === 'accent'
+    ? 'border-outline-variant bg-surface-container-low text-ink'
+    : 'border-outline-variant bg-surface-container-low text-ink-muted';
+---
+
+<span class:list={[baseClasses, toneClasses, className]}>
+  <slot>{children}</slot>
+</span>

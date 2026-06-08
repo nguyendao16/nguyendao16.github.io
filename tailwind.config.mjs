@@ -1,0 +1,128 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  theme: {
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: '1rem',
+        sm: '1.5rem',
+        lg: '2.5rem',
+        xl: '4rem',
+      },
+    },
+    extend: {
+      colors: {
+        surface: {
+          DEFAULT: 'var(--color-surface)',
+          dim: 'var(--color-surface-dim)',
+          bright: 'var(--color-surface-bright)',
+          'container-lowest': 'var(--color-surface-container-lowest)',
+          'container-low': 'var(--color-surface-container-low)',
+          container: 'var(--color-surface-container)',
+          'container-high': 'var(--color-surface-container-high)',
+          'container-highest': 'var(--color-surface-container-highest)',
+        },
+        ink: {
+          DEFAULT: 'var(--color-on-surface)',
+          muted: 'var(--color-on-surface-variant)',
+          subtle: 'var(--color-outline)',
+        },
+        outline: {
+          DEFAULT: 'var(--color-outline)',
+          variant: 'var(--color-outline-variant)',
+        },
+        action: {
+          DEFAULT: 'var(--color-primary-container)',
+          hover: 'var(--color-primary)',
+        },
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          on: 'var(--color-on-primary)',
+          container: 'var(--color-primary-container)',
+          'on-container': 'var(--color-on-primary-container)',
+        },
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          on: 'var(--color-on-secondary)',
+          container: 'var(--color-secondary-container)',
+          'on-container': 'var(--color-on-secondary-container)',
+        },
+        tertiary: {
+          DEFAULT: 'var(--color-tertiary)',
+          on: 'var(--color-on-tertiary)',
+          container: 'var(--color-tertiary-container)',
+          'on-container': 'var(--color-on-tertiary-container)',
+        },
+        error: {
+          DEFAULT: 'var(--color-error)',
+          on: 'var(--color-on-error)',
+          container: 'var(--color-error-container)',
+          'on-container': 'var(--color-on-error-container)',
+        },
+      },
+      fontFamily: {
+        sans: ['var(--font-sans)'],
+        heading: ['var(--font-heading)'],
+        mono: ['var(--font-mono)'],
+      },
+      fontSize: {
+        'display-lg': ['3rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'display-lg-mobile': ['2.25rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        'headline-md': ['2rem', { lineHeight: '1.3', letterSpacing: '-0.01em' }],
+        'headline-sm': ['1.5rem', { lineHeight: '1.4', letterSpacing: '-0.01em' }],
+        'body-lg': ['1.125rem', { lineHeight: '1.6' }],
+        'body-md': ['1rem', { lineHeight: '1.6' }],
+        'label-md': ['0.875rem', { lineHeight: '1.5', letterSpacing: '0.05em' }],
+        'label-sm': ['0.75rem', { lineHeight: '1.5', letterSpacing: '0.05em' }],
+      },
+      fontWeight: {
+        regular: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+      },
+      lineHeight: {
+        display: '1.1',
+        'display-mobile': '1.2',
+        heading: '1.3',
+        'heading-sm': '1.4',
+        copy: '1.6',
+        label: '1.5',
+      },
+      spacing: {
+        xs: '0.5rem',
+        sm: '0.75rem',
+        md: '1rem',
+        lg: '1.5rem',
+        xl: '2rem',
+        '2xl': '3rem',
+        '3xl': '4rem',
+        '4xl': '5rem',
+        page: '1rem',
+        'page-sm': '1.5rem',
+        'page-lg': '2.5rem',
+        section: '5rem',
+      },
+      borderRadius: {
+        DEFAULT: '0.25rem',
+        button: '0.25rem',
+        card: '0.5rem',
+        surface: '0.75rem',
+        pill: '9999px',
+      },
+      boxShadow: {
+        soft: '0 1px 2px rgba(15, 23, 42, 0.04)',
+        panel: '0 8px 24px rgba(15, 23, 42, 0.04)',
+        focus: '0 0 0 3px rgba(71, 85, 105, 0.12)',
+      },
+      maxWidth: {
+        page: '1200px',
+        content: '760px',
+        reading: '680px',
+        panel: '880px',
+      },
+    },
+  },
+  plugins: [],
+};

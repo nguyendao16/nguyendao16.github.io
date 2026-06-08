@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-label="Face recognition preview">
+  <rect width="900" height="600" rx="20" fill="#f8fafc"/>
+  <circle cx="420" cy="260" r="110" fill="#cbd5e1"/>
+  <circle cx="380" cy="240" r="10" fill="#0f172a"/>
+  <circle cx="460" cy="240" r="10" fill="#0f172a"/>
+  <path d="M390 290c18 20 60 20 78 0" fill="none" stroke="#0f172a" stroke-width="10" stroke-linecap="round"/>
+  <rect x="300" y="150" width="240" height="220" rx="30" fill="none" stroke="#00dbe9" stroke-width="5"/>
+  <rect x="580" y="190" width="180" height="140" rx="18" fill="#e2e8f0"/>
+  <path d="M610 225h120M610 260h120M610 295h90" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+</svg>

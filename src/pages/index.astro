@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { profile } from '../data/profile';
+
+import { formatBlogDate, getPublishedBlogPosts } from '../utils/blog';
+
+const latestPosts = getPublishedBlogPosts(await getCollection('blog')).slice(0, 3);
+---
+
+<BaseLayout title="Home" description={profile.intro}>
+  <Hero
+    eyebrow="AI CV Portfolio"
+    title={profile.headline}
+    description={profile.intro}
+    desktopImage="/images/home/hero-desktop.svg"
+    desktopAlt="AI Neural Network Visualization"
+    mobileImage="/images/home/hero-mobile.svg"
+    mobileAlt="Portrait of an AI Specialist"
+  >
+    <Button href="/contact" variant="secondary">Liên hệ</Button>
+  </Hero>
+
+  <Section
+    title="Bài viết mới nhất"
+  >
+    <div class="mt-6 space-y-4">
+      {latestPosts.map((post) => (
+        <BlogCard
+          title={post.data.title}
+          description={post.data.description}
+          date={formatBlogDate(post.data.date)}
+          href={`/blog/${post.slug}/`}
+          tags={post.data.tags}
+        />
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

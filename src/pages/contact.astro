@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+import SocialLink from '../components/SocialLink.astro';
+import { profile } from '../data/profile';
+---
+
+<BaseLayout title="Contact" description="Reach out by email, GitHub, or LinkedIn.">
+  <Section
+    title="Liên hệ"
+    description="Get in touch for collaborations, internships, project feedback, or research discussions."
+  >
+    <div class="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <form
+        action={`mailto:${profile.email}`}
+        method="post"
+        enctype="text/plain"
+        class="card-muted space-y-4 p-5 sm:p-6"
+      >
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="grid gap-2">
+            <span class="text-label-sm uppercase text-ink-subtle">Name</span>
+            <input
+              name="name"
+              type="text"
+              placeholder="Jane Doe"
+              class="w-full rounded-button border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-ink placeholder:text-ink-subtle"
+            />
+          </label>
+
+          <label class="grid gap-2">
+            <span class="text-label-sm uppercase text-ink-subtle">Email</span>
+            <input
+              name="email"
+              type="email"
+              placeholder="jane@example.com"
+              class="w-full rounded-button border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-ink placeholder:text-ink-subtle"
+            />
+          </label>
+        </div>
+
+        <label class="grid gap-2">
+          <span class="text-label-sm uppercase text-ink-subtle">Subject</span>
+          <select
+            name="subject"
+            class="w-full rounded-button border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-ink"
+          >
+            <option>Collaboration</option>
+            <option>Internship</option>
+            <option>Project feedback</option>
+            <option>Research discussion</option>
+          </select>
+        </label>
+
+        <label class="grid gap-2">
+          <span class="text-label-sm uppercase text-ink-subtle">Message</span>
+          <textarea
+            name="message"
+            rows="6"
+            placeholder="How can I help?"
+            class="w-full rounded-button border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-ink placeholder:text-ink-subtle"
+          ></textarea>
+        </label>
+
+        <Button type="submit" class="w-full justify-center">
+          Send message
+        </Button>
+      </form>
+
+      <div class="space-y-4">
+        <article class="card-muted p-5 sm:p-6">
+          <p class="text-label-sm uppercase text-ink-subtle">Direct</p>
+          <a href={`mailto:${profile.email}`} class="mt-3 block font-heading text-headline-sm font-medium tracking-tight text-ink">
+            {profile.email}
+          </a>
+          <p class="mt-2 text-body-md text-ink-muted">
+            Fastest way to reach me for project questions or collaboration ideas.
+          </p>
+        </article>
+
+        <article class="card-muted p-5 sm:p-6">
+          <p class="text-label-sm uppercase text-ink-subtle">Links</p>
+          <div class="mt-4 grid gap-2">
+            <SocialLink href={profile.githubUrl} kind="github" label="GitHub" />
+            <SocialLink href={profile.linkedinUrl} kind="linkedin" label="LinkedIn" />
+          </div>
+        </article>
+
+        <article class="card-muted p-5 sm:p-6">
+          <p class="text-label-sm uppercase text-ink-subtle">Note</p>
+          <p class="mt-3 text-body-md text-ink-muted">
+            I do not use a backend contact form. This page opens your mail client so messages stay simple and portable.
+          </p>
+        </article>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>

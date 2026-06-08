@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-label="Handwriting classification preview">
+  <rect width="900" height="700" rx="24" fill="#f8fafc"/>
+  <rect x="90" y="90" width="720" height="520" rx="24" fill="#e2e8f0"/>
+  <path d="M220 420c35-110 75-175 125-175 35 0 55 35 67 80l33 125c10 35 27 54 53 54 40 0 86-43 138-145" fill="none" stroke="#0f172a" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="610" cy="240" r="100" fill="none" stroke="#00dbe9" stroke-width="5" stroke-dasharray="10 10"/>
+</svg>

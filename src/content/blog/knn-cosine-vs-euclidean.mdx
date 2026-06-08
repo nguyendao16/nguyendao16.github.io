@@ -1,0 +1,59 @@
+---
+title: Comparing Cosine and Euclidean Distance in KNN
+description: A practical walk-through of when cosine similarity beats Euclidean distance for handwritten digit classification.
+date: 2026-06-03
+updatedDate: 2026-06-08
+tags:
+  - machine learning
+  - knn
+  - metrics
+  - classification
+coverImage: /images/blog/knn-cosine-vs-euclidean.svg
+draft: false
+---
+
+K-nearest neighbors is a simple baseline, but the choice of distance metric changes the behavior of the model more than many people expect.
+
+![KNN distance comparison chart](/images/blog/knn-cosine-vs-euclidean.svg)
+
+## Why the metric matters
+
+When images are flattened into vectors, Euclidean distance measures absolute magnitude differences. Cosine distance measures the angle between vectors and ignores scale. For handwritten digits, that often means cosine is more stable when stroke thickness or brightness varies.
+
+$$
+\mathrm{cosine\_similarity}(x, y) = \frac{x \cdot y}{\lVert x \rVert \lVert y \rVert}
+$$
+
+## A simple Python baseline
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import Normalizer
+from sklearn.pipeline import make_pipeline
+
+knn_euclidean = KNeighborsClassifier(n_neighbors=5, metric="euclidean")
+knn_cosine = make_pipeline(
+    Normalizer(),
+    KNeighborsClassifier(n_neighbors=5, metric="cosine")
+)
+```
+
+## Interpreting the result
+
+The cosine model is often better when the class depends on pattern shape rather than vector magnitude. Euclidean distance can still win when the feature space is already normalized or when magnitude carries signal.
+
+## Visual example
+
+The chart below is a placeholder for an experiment screenshot or confusion-matrix export.
+
+<iframe
+  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+  title="KNN comparison walkthrough"
+  loading="lazy"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
+## Practical takeaway
+
+Use Euclidean distance as the default only after checking whether normalization changes the ranking. For sparse or scale-sensitive inputs, cosine similarity can produce a cleaner neighbor set with less sensitivity to raw feature size.
