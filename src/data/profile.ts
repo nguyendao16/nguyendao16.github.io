@@ -1,5 +1,5 @@
 export const profile = {
-  name: 'AI CV Specialist',
+  name: 'Đào Khôi Nguyên',
   title: 'Machine Learning and Computer Vision Student',
   headline: 'Building practical computer vision systems.',
   intro:
