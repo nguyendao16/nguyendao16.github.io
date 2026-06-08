@@ -35,12 +35,12 @@ export const profile = {
   skills: [
     'Python',
     'C++',
-    'Linux/Debian System Admin',
+    'Linux=',
     'Docker',
     'Calculus & Linear Algebra',
-    'Deep Learning Frameworks'
+    'OpenCV'
   ],
-  workExperience: [
+  timeline: [
     {
       company: '10 Group Vietnam Technology And Education Company Limited',
       type: 'Part-time',
