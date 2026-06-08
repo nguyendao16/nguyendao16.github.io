@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import Tag from '../components/Tag.astro';
 import Button from '../components/Button.astro';
+import { site } from '../data/site';
 import { formatBlogDate } from '../utils/blog';
 
 type Heading = {
@@ -60,7 +61,7 @@ const metaDescription = description;
         <div class="max-w-reading space-y-5">
           <div class="flex flex-wrap items-center gap-2">
             <p class="font-mono text-label-sm uppercase tracking-[0.08em] text-ink-subtle">
-              Technical blog
+              {site.blogPost.eyebrow}
             </p>
             {readingTime && (
               <span class="font-mono text-label-sm text-ink-subtle">
@@ -108,7 +109,7 @@ const metaDescription = description;
               href={`/blog/${previous.slug}/`}
               class="card-muted block p-5 transition-colors duration-150 hover:border-outline hover:bg-surface-container"
             >
-              <p class="text-label-sm uppercase text-ink-subtle">Previous post</p>
+              <p class="text-label-sm uppercase text-ink-subtle">{site.blogPost.previousLabel}</p>
               <p class="mt-2 font-heading text-headline-sm font-medium tracking-tight text-ink">
                 {previous.data.title}
               </p>
@@ -116,8 +117,8 @@ const metaDescription = description;
             </a>
           ) : (
             <div class="card-muted p-5">
-              <p class="text-label-sm uppercase text-ink-subtle">Previous post</p>
-              <p class="mt-2 text-sm text-ink-muted">No earlier post available.</p>
+              <p class="text-label-sm uppercase text-ink-subtle">{site.blogPost.previousLabel}</p>
+              <p class="mt-2 text-sm text-ink-muted">{site.blogPost.noPreviousLabel}</p>
             </div>
           )}
 
@@ -126,7 +127,7 @@ const metaDescription = description;
               href={`/blog/${next.slug}/`}
               class="card-muted block p-5 transition-colors duration-150 hover:border-outline hover:bg-surface-container"
             >
-              <p class="text-label-sm uppercase text-ink-subtle">Next post</p>
+              <p class="text-label-sm uppercase text-ink-subtle">{site.blogPost.nextLabel}</p>
               <p class="mt-2 font-heading text-headline-sm font-medium tracking-tight text-ink">
                 {next.data.title}
               </p>
@@ -134,22 +135,22 @@ const metaDescription = description;
             </a>
           ) : (
             <div class="card-muted p-5">
-              <p class="text-label-sm uppercase text-ink-subtle">Next post</p>
-              <p class="mt-2 text-sm text-ink-muted">No newer post available.</p>
+              <p class="text-label-sm uppercase text-ink-subtle">{site.blogPost.nextLabel}</p>
+              <p class="mt-2 text-sm text-ink-muted">{site.blogPost.noNextLabel}</p>
             </div>
           )}
         </div>
 
         <div class="mt-8">
           <Button href="/blog" variant="secondary">
-            Back to blog
+            {site.blogPost.backLabel}
           </Button>
         </div>
       </div>
 
       <aside class="lg:sticky lg:top-24">
         <div class="card-muted p-5">
-          <p class="text-label-sm uppercase text-ink-subtle">Table of contents</p>
+          <p class="text-label-sm uppercase text-ink-subtle">{site.blogPost.tocLabel}</p>
           {tocHeadings.length > 0 ? (
             <nav aria-label="Table of contents" class="mt-4">
               <ul class="space-y-2">
@@ -167,7 +168,7 @@ const metaDescription = description;
             </nav>
           ) : (
             <p class="mt-4 text-sm text-ink-muted">
-              Headings will appear here when the article includes sections.
+              {site.blogPost.tocEmptyLabel}
             </p>
           )}
         </div>

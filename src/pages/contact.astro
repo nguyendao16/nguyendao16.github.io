@@ -3,96 +3,113 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import Button from '../components/Button.astro';
 import SocialLink from '../components/SocialLink.astro';
-import { profile } from '../data/profile';
+import { emailLink, socials } from '../data/socials';
+import { site } from '../data/site';
+
+const formLabels = site.pages.contact.formLabels;
+const formPlaceholders = site.pages.contact.formPlaceholders;
+const subjects = site.pages.contact.subjects ?? [];
 ---
 
-<BaseLayout title="Contact" description="Reach out by email, GitHub, or LinkedIn.">
+<BaseLayout title={site.pages.contact.title} description={site.pages.contact.description}>
   <Section
-    title="Liên hệ"
-    description="Get in touch for collaborations, internships, project feedback, or research discussions."
+    title={site.pages.contact.title}
+    description={site.pages.contact.description}
   >
     <div class="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
       <form
-        action={`mailto:${profile.email}`}
+        action={emailLink}
         method="post"
         enctype="text/plain"
         class="card-muted space-y-4 p-5 sm:p-6"
       >
         <div class="grid gap-4 sm:grid-cols-2">
           <label class="grid gap-2">
-            <span class="text-label-sm uppercase text-ink-subtle">Name</span>
+            <span class="text-label-sm uppercase text-ink-subtle">{formLabels?.name ?? 'Name'}</span>
             <input
               name="name"
               type="text"
-              placeholder="Jane Doe"
+              placeholder={formPlaceholders?.name}
               class="w-full rounded-button border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-ink placeholder:text-ink-subtle"
             />
           </label>
 
           <label class="grid gap-2">
-            <span class="text-label-sm uppercase text-ink-subtle">Email</span>
+            <span class="text-label-sm uppercase text-ink-subtle">{formLabels?.email ?? 'Email'}</span>
             <input
               name="email"
               type="email"
-              placeholder="jane@example.com"
+              placeholder={formPlaceholders?.email}
               class="w-full rounded-button border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-ink placeholder:text-ink-subtle"
             />
           </label>
         </div>
 
         <label class="grid gap-2">
-          <span class="text-label-sm uppercase text-ink-subtle">Subject</span>
+          <span class="text-label-sm uppercase text-ink-subtle">{formLabels?.subject ?? 'Subject'}</span>
           <select
             name="subject"
             class="w-full rounded-button border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-ink"
           >
-            <option>Collaboration</option>
-            <option>Internship</option>
-            <option>Project feedback</option>
-            <option>Research discussion</option>
+            {subjects.map((subject) => (
+              <option value={subject.value}>{subject.label}</option>
+            ))}
           </select>
         </label>
 
         <label class="grid gap-2">
-          <span class="text-label-sm uppercase text-ink-subtle">Message</span>
+          <span class="text-label-sm uppercase text-ink-subtle">{formLabels?.message ?? 'Message'}</span>
           <textarea
             name="message"
             rows="6"
-            placeholder="How can I help?"
+            placeholder={formPlaceholders?.message}
             class="w-full rounded-button border border-outline-variant bg-surface-container-lowest px-4 py-3 text-body-md text-ink placeholder:text-ink-subtle"
           ></textarea>
         </label>
 
         <Button type="submit" class="w-full justify-center">
-          Send message
+          {site.pages.contact.formSubmitLabel ?? 'Send message'}
         </Button>
       </form>
 
       <div class="space-y-4">
         <article class="card-muted p-5 sm:p-6">
-          <p class="text-label-sm uppercase text-ink-subtle">Direct</p>
-          <a href={`mailto:${profile.email}`} class="mt-3 block font-heading text-headline-sm font-medium tracking-tight text-ink">
-            {profile.email}
+          {site.pages.contact.directTitle && (
+            <p class="text-label-sm uppercase text-ink-subtle">{site.pages.contact.directTitle}</p>
+          )}
+          <a href={emailLink} class="mt-3 block font-heading text-headline-sm font-medium tracking-tight text-ink">
+            {socials.email}
           </a>
-          <p class="mt-2 text-body-md text-ink-muted">
-            Fastest way to reach me for project questions or collaboration ideas.
-          </p>
+          {site.pages.contact.directDescription && (
+            <p class="mt-2 text-body-md text-ink-muted">
+              {site.pages.contact.directDescription}
+            </p>
+          )}
         </article>
 
-        <article class="card-muted p-5 sm:p-6">
-          <p class="text-label-sm uppercase text-ink-subtle">Links</p>
-          <div class="mt-4 grid gap-2">
-            <SocialLink href={profile.githubUrl} kind="github" label="GitHub" />
-            <SocialLink href={profile.linkedinUrl} kind="linkedin" label="LinkedIn" />
-          </div>
-        </article>
+        {socials.links.length > 0 && (
+          <article class="card-muted p-5 sm:p-6">
+            {site.pages.contact.linksTitle && (
+              <p class="text-label-sm uppercase text-ink-subtle">{site.pages.contact.linksTitle}</p>
+            )}
+            <div class="mt-4 grid gap-2">
+              {socials.links.map((link) => (
+                <SocialLink href={link.href} kind={link.kind} label={link.label} />
+              ))}
+            </div>
+          </article>
+        )}
 
-        <article class="card-muted p-5 sm:p-6">
-          <p class="text-label-sm uppercase text-ink-subtle">Note</p>
-          <p class="mt-3 text-body-md text-ink-muted">
-            I do not use a backend contact form. This page opens your mail client so messages stay simple and portable.
-          </p>
-        </article>
+        {site.pages.contact.note && (
+          <article class="card-muted p-5 sm:p-6">
+            {site.pages.contact.noteTitle && (
+              <p class="text-label-sm uppercase text-ink-subtle">{site.pages.contact.noteTitle}</p>
+            )}
+            <p class="mt-3 text-body-md text-ink-muted">
+              {site.pages.contact.note}
+            </p>
+          </article>
+        )}
       </div>
     </div>
   </Section>

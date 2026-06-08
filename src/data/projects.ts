@@ -1,4 +1,24 @@
-export const projects = [
+export type ProjectMetric = {
+  label: string;
+  value: string;
+};
+
+export type Project = {
+  title: string;
+  description: string;
+  problemStatement?: string;
+  techStack?: string[];
+  metrics?: ProjectMetric[];
+  githubUrl?: string;
+  demoUrl?: string;
+  image?: string;
+  imageAlt?: string;
+  href?: string;
+  tags?: string[];
+  featured?: boolean;
+};
+
+export const projects: Project[] = [
   {
     title: 'Handwriting classification with KNN',
     description:
@@ -62,4 +82,4 @@ export const projects = [
     tags: ['Visualization', 'Dashboard', 'Analytics'],
     featured: true,
   },
-] as const;
+];

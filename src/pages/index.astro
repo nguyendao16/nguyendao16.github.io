@@ -6,27 +6,30 @@ import Section from '../components/Section.astro';
 import Button from '../components/Button.astro';
 import BlogCard from '../components/BlogCard.astro';
 import { profile } from '../data/profile';
+import { site } from '../data/site';
 
 import { formatBlogDate, getPublishedBlogPosts } from '../utils/blog';
 
 const latestPosts = getPublishedBlogPosts(await getCollection('blog')).slice(0, 3);
+const heroTitle = profile.headline ?? profile.name;
+const heroDescription = profile.intro ?? profile.bio ?? site.seo.description;
 ---
 
-<BaseLayout title="Home" description={profile.intro}>
+<BaseLayout title={site.pages.home.seoTitle} description={heroDescription}>
   <Hero
-    eyebrow="AI CV Portfolio"
-    title={profile.headline}
-    description={profile.intro}
-    desktopImage="/images/home/hero-desktop.svg"
-    desktopAlt="AI Neural Network Visualization"
-    mobileImage="/images/home/hero-mobile.svg"
-    mobileAlt="Portrait of an AI Specialist"
+    eyebrow={site.pages.home.eyebrow}
+    title={heroTitle}
+    description={heroDescription}
+    desktopImage={site.pages.home.heroImages.desktop.src}
+    desktopAlt={site.pages.home.heroImages.desktop.alt}
+    mobileImage={site.pages.home.heroImages.mobile.src}
+    mobileAlt={site.pages.home.heroImages.mobile.alt}
   >
-    <Button href="/contact" variant="secondary">Liên hệ</Button>
+    <Button href="/contact" variant="secondary">{site.pages.home.contactCtaLabel}</Button>
   </Hero>
 
   <Section
-    title="Bài viết mới nhất"
+    title={site.pages.home.latestPostsTitle}
   >
     <div class="mt-6 space-y-4">
       {latestPosts.map((post) => (

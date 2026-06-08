@@ -1,15 +1,58 @@
-export const profile = {
+export type EducationItem = {
+  period?: string;
+  title: string;
+  institution?: string;
+  description?: string;
+};
+
+export type ExperienceRole = {
+  title?: string;
+  period?: string;
+  duration?: string;
+  skills?: string[];
+  description?: string;
+};
+
+export type ExperienceItem = {
+  company?: string;
+  type?: string;
+  location?: string;
+  overallPeriod?: string;
+  overallDuration?: string;
+  roles?: ExperienceRole[];
+};
+
+export type Profile = {
+  name: string;
+  title?: string;
+  headline?: string;
+  intro?: string;
+  bio?: string;
+  location?: string;
+  avatar?: {
+    src: string;
+    alt?: string;
+  };
+  education?: EducationItem[];
+  researchInterests?: string[];
+  skills?: string[];
+  experience?: ExperienceItem[];
+  resumeHighlights?: string[];
+};
+
+export const profile: Profile = {
   name: 'Đào Khôi Nguyên',
   title: 'Artificial Intelligence Student',
   headline: 'Bridging fundamental mathematics, AI models, and robust system architecture.',
   intro:
     'I design and implement AI solutions with a strong focus on first-principles understanding, mathematical logic, and building practical systems from the ground up.',
   bio:
-    'With a foundational background transitioning from medicine to Artificial Intelligence, my core focus lies in Deep Learning, Reinforcement Learning, and Computer Vision. I am passionate about understanding the mathematical core of algorithms—from linear algebra to statistical distributions—and translating them into robust software. Beyond training models, I actively manage Linux environments, build backend middleware, and work with low-level data structures to ensure my systems run on solid infrastructure.',
-  email: 'daokhoinguyen.go@gmail.com',
-  githubUrl: 'https://github.com/nguyendao16',
-  linkedinUrl: 'https://www.linkedin.com/in/nguyendao16/',
+    'With a foundational background transitioning from medicine to Artificial Intelligence, my core focus lies in Deep Learning, Reinforcement Learning, and Computer Vision. I am passionate about understanding the mathematical core of algorithms-from linear algebra to statistical distributions-and translating them into robust software. Beyond training models, I actively manage Linux environments, build backend middleware, and work with low-level data structures to ensure my systems run on solid infrastructure.',
   location: 'Hanoi, Vietnam',
+  avatar: {
+    src: '/images/profile/avatar.svg',
+    alt: 'Đào Khôi Nguyên portrait',
+  },
   education: [
     {
       period: '2024 - 2028',
@@ -24,23 +67,23 @@ export const profile = {
       institution: 'Thai Nguyen University of Medicine and Pharmacy',
       description:
         'Completed foundational medical studies, providing a unique perspective for handling and authenticating healthcare datasets in AI research.',
-    }
+    },
   ],
   researchInterests: [
     'Deep Learning & Reinforcement Learning',
     'Computer Vision',
     'Healthcare Datasets & Medical AI',
-    'Mathematical Modeling'
+    'Mathematical Modeling',
   ],
   skills: [
     'Python',
     'C++',
-    'Linux=',
+    'Linux',
     'Docker',
     'Calculus & Linear Algebra',
-    'OpenCV'
+    'OpenCV',
   ],
-  timeline: [
+  experience: [
     {
       company: '10 Group Vietnam Technology And Education Company Limited',
       type: 'Part-time',
@@ -53,21 +96,19 @@ export const profile = {
           period: 'Jun 2025 - Dec 2025',
           duration: '7 mos',
           skills: ['Python (Programming Language)', 'n8n'],
-          description: '' // Optional description for this specific role
         },
         {
           title: 'AI Engineer',
           period: 'Jul 2025 - Dec 2025',
           duration: '6 mos',
           skills: ['LangChain', 'Git'],
-          description: '' // Optional description for this specific role
-        }
-      ]
+        },
+      ],
     },
   ],
   resumeHighlights: [
     'Strong mathematical foundation with active preparation for national-level Olympiad competitions.',
     'Practical experience managing Linux servers, Docker containers, and Nginx reverse proxies.',
-    'Unique interdisciplinary background combining medical knowledge with advanced artificial intelligence research.'
+    'Unique interdisciplinary background combining medical knowledge with advanced artificial intelligence research.',
   ],
-} as const;
+};

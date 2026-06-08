@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
 
 interface Props {
   title: string;
@@ -11,10 +12,10 @@ interface Props {
 
 const {
   title,
-  description = 'AI and computer vision portfolio and technical blog.',
+  description = site.seo.description,
   canonical,
 } = Astro.props;
-const pageTitle = `${title} | AI CV Portfolio`;
+const pageTitle = site.seo.titleTemplate.replace('%s', title);
 ---
 
 <!doctype html>
@@ -23,7 +24,7 @@ const pageTitle = `${title} | AI CV Portfolio`;
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content={site.seo.themeColor} />
     {canonical && <link rel="canonical" href={canonical} />}
     <slot name="head" />
     <title>{pageTitle}</title>

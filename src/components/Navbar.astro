@@ -2,14 +2,18 @@
 import Button from './Button.astro';
 import SocialLink from './SocialLink.astro';
 import { navigation } from '../data/navigation';
-import { profile } from '../data/profile';
+import { emailLink, socials } from '../data/socials';
+import { site } from '../data/site';
+
+const github = socials.links.find((link) => link.kind === 'github');
+const linkedin = socials.links.find((link) => link.kind === 'linkedin');
 ---
 
 <header class="surface-panel border-b border-outline-variant">
   <div class="site-container">
     <div class="flex items-center justify-between py-4 lg:hidden">
       <a href="/" class="font-heading text-sm font-medium tracking-tight sm:text-base">
-        AI CV Portfolio
+        {site.brand}
       </a>
 
       <details class="group relative">
@@ -37,17 +41,21 @@ import { profile } from '../data/profile';
           </nav>
 
           <div class="mt-4 grid gap-2 border-t border-outline-variant pt-4">
-            <a href={`mailto:${profile.email}`} class="link-muted text-sm">
-              {profile.email}
+            <a href={emailLink} class="link-muted text-sm">
+              {socials.email}
             </a>
-            <a href={profile.githubUrl} class="link-muted text-sm">
-              GitHub
-            </a>
-            <a href={profile.linkedinUrl} class="link-muted text-sm">
-              LinkedIn
-            </a>
+            {github && (
+              <a href={github.href} class="link-muted text-sm">
+                {github.label}
+              </a>
+            )}
+            {linkedin && (
+              <a href={linkedin.href} class="link-muted text-sm">
+                {linkedin.label}
+              </a>
+            )}
             <Button href="/contact" variant="primary" class="mt-2 w-full justify-center">
-              Liên hệ
+              {site.pages.contact.title}
             </Button>
           </div>
         </div>
@@ -56,7 +64,7 @@ import { profile } from '../data/profile';
 
     <div class="hidden items-center justify-between py-4 lg:flex">
       <a href="/" class="font-heading text-base font-medium tracking-tight">
-        AI CV Portfolio
+        {site.brand}
       </a>
 
       <nav aria-label="Primary navigation" class="flex items-center gap-8 text-sm font-medium text-ink-muted">
@@ -68,8 +76,8 @@ import { profile } from '../data/profile';
       </nav>
 
       <div class="flex items-center gap-2">
-        <SocialLink href={`mailto:${profile.email}`} kind="email" label={`Email ${profile.email}`} iconOnly />
-        <SocialLink href={profile.githubUrl} kind="github" label="GitHub" iconOnly />
+        <SocialLink href={emailLink} kind="email" label={`Email ${socials.email}`} iconOnly />
+        {github && <SocialLink href={github.href} kind={github.kind} label={github.label} iconOnly />}
       </div>
     </div>
   </div>

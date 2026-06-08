@@ -4,23 +4,24 @@ import Section from '../components/Section.astro';
 import Button from '../components/Button.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { projects } from '../data/projects';
+import { site } from '../data/site';
 ---
 
-<BaseLayout title="Projects">
+<BaseLayout title={site.pages.projects.title} description={site.pages.projects.description}>
   <Section
     eyebrow="Projects"
-    title="Applied machine learning and computer vision work"
-    description="Selected projects that show how I approach problem framing, model selection, evaluation, and presentation."
+    title={site.pages.projects.title}
+    description={site.pages.projects.description}
   >
     <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-      <Button href="/resume">Resume</Button>
-      <Button href="/contact" variant="secondary">Contact</Button>
+      <Button href="/resume">{site.pages.projects.ctaResumeLabel}</Button>
+      <Button href="/contact" variant="secondary">{site.pages.projects.ctaContactLabel}</Button>
     </div>
   </Section>
 
   <Section
-    title="Featured projects"
-    description="Each project includes the problem statement, tech stack, results, and links for deeper review."
+    title={site.pages.projects.featuredTitle}
+    description={site.pages.projects.featuredDescription}
   >
     <div class="mt-8 space-y-8">
       {projects.map((project) => (
@@ -28,13 +29,13 @@ import { projects } from '../data/projects';
           title={project.title}
           description={project.description}
           problemStatement={project.problemStatement}
-          techStack={[...project.techStack]}
-          metrics={[...project.metrics]}
+          techStack={project.techStack}
+          metrics={project.metrics}
           githubUrl={project.githubUrl}
           demoUrl={project.demoUrl}
           image={project.image}
           imageAlt={project.imageAlt}
-          tags={[...project.tags]}
+          tags={project.tags}
         />
       ))}
     </div>

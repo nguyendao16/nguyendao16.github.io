@@ -4,84 +4,159 @@ import Section from '../components/Section.astro';
 import SkillBadge from '../components/SkillBadge.astro';
 import Tag from '../components/Tag.astro';
 import { profile } from '../data/profile';
+import { site } from '../data/site';
+
+const bio = profile.bio ?? site.pages.about.description;
+const avatarSrc = profile.avatar?.src;
+const avatarAlt = profile.avatar?.alt ?? `${profile.name} portrait`;
+const education = profile.education ?? [];
+const skills = profile.skills ?? [];
+const researchInterests = profile.researchInterests ?? [];
+const experience = profile.experience ?? [];
 ---
 
-<BaseLayout title="About" description={profile.bio}>
+<BaseLayout title={site.pages.about.title} description={bio}>
   <section class="site-container py-10 sm:py-14 lg:py-16">
     <div class="mx-auto flex max-w-content flex-col items-center text-center">
-      <figure class="card overflow-hidden p-4">
-        <img
-          src="/images/profile/avatar.svg"
-          alt={`${profile.name} portrait`}
-          class="h-28 w-28 rounded-card object-cover sm:h-32 sm:w-32"
-        />
-      </figure>
+      {avatarSrc && (
+        <figure class="card overflow-hidden p-4">
+          <img
+            src={avatarSrc}
+            alt={avatarAlt}
+            class="h-28 w-28 rounded-card object-cover sm:h-32 sm:w-32"
+          />
+        </figure>
+      )}
 
-      <p class="mt-6 text-label-sm uppercase tracking-[0.08em] text-ink-subtle">
-        About me
-      </p>
+      {site.pages.about.eyebrow && (
+        <p class="mt-6 text-label-sm uppercase tracking-[0.08em] text-ink-subtle">
+          {site.pages.about.eyebrow}
+        </p>
+      )}
       <h1 class="mt-3 font-heading text-display-lg-mobile font-medium tracking-tight text-balance sm:text-display-lg">
         {profile.name}
       </h1>
-      <p class="mt-3 text-body-lg text-ink-muted">
-        {profile.title}
-      </p>
-      <p class="mt-5 max-w-reading text-body-md text-ink-muted">
-        {profile.bio}
-      </p>
+      {profile.title && (
+        <p class="mt-3 text-body-lg text-ink-muted">
+          {profile.title}
+        </p>
+      )}
+      {bio && (
+        <p class="mt-5 max-w-reading text-body-md text-ink-muted">
+          {bio}
+        </p>
+      )}
     </div>
   </section>
 
-  <Section title="Education">
-    <div class="mt-6 grid gap-4">
-      {profile.education.map((item) => (
-        <article class="card-muted p-5 sm:p-6">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p class="text-label-sm uppercase text-ink-subtle">{item.period}</p>
-              <h2 class="mt-2 font-heading text-headline-sm font-medium tracking-tight text-ink">
-                {item.title}
-              </h2>
-              <p class="mt-2 text-body-md text-ink-muted">{item.institution}</p>
+  {education.length > 0 && (
+    <Section title={site.pages.about.educationTitle}>
+      <div class="mt-6 grid gap-4">
+        {education.map((item) => (
+          <article class="card-muted p-5 sm:p-6">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                {item.period && <p class="text-label-sm uppercase text-ink-subtle">{item.period}</p>}
+                <h2 class="mt-2 font-heading text-headline-sm font-medium tracking-tight text-ink">
+                  {item.title}
+                </h2>
+                {item.institution && <p class="mt-2 text-body-md text-ink-muted">{item.institution}</p>}
+              </div>
             </div>
-          </div>
-          <p class="mt-4 text-body-md text-ink-muted">{item.description}</p>
-        </article>
-      ))}
-    </div>
-  </Section>
+            {item.description && <p class="mt-4 text-body-md text-ink-muted">{item.description}</p>}
+          </article>
+        ))}
+      </div>
+    </Section>
+  )}
 
-  <Section title="Skills">
-    <div class="mt-6 flex flex-wrap gap-3">
-      {profile.skills.map((skill) => (
-        <SkillBadge label={skill} />
-      ))}
-    </div>
-  </Section>
+  {skills.length > 0 && (
+    <Section title={site.pages.about.skillsTitle}>
+      <div class="mt-6 flex flex-wrap gap-3">
+        {skills.map((skill) => (
+          <SkillBadge label={skill} />
+        ))}
+      </div>
+    </Section>
+  )}
 
-  <Section title="Research interests">
-    <div class="mt-6 flex flex-wrap gap-2">
-      {profile.researchInterests.map((interest) => (
-        <Tag>{interest}</Tag>
-      ))}
-    </div>
-  </Section>
+  {researchInterests.length > 0 && (
+    <Section title={site.pages.about.researchTitle}>
+      <div class="mt-6 flex flex-wrap gap-2">
+        {researchInterests.map((interest) => (
+          <Tag>{interest}</Tag>
+        ))}
+      </div>
+    </Section>
+  )}
 
-  <Section title="Timeline">
+  {experience.length > 0 && (
+  <Section title={site.pages.about.experienceTitle}>
     <ol class="mt-6 space-y-4">
-      {profile.timeline.map((item) => (
+      {experience.map((item) => (
         <li class="relative pl-14">
           <span class="absolute left-0 top-5 h-5 w-5 rounded-full border border-outline-variant bg-surface-container-lowest"></span>
           <span class="absolute left-2 top-10 h-[calc(100%-1.25rem)] w-px bg-outline-variant"></span>
           <article class="card-muted p-5 sm:p-6">
-            <p class="text-label-sm uppercase text-ink-subtle">{item.period}</p>
-            <h2 class="mt-2 font-heading text-headline-sm font-medium tracking-tight text-ink">
-              {item.title}
-            </h2>
-            <p class="mt-3 text-body-md text-ink-muted">{item.description}</p>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                {(item.overallPeriod || item.overallDuration) && (
+                  <p class="text-label-sm uppercase text-ink-subtle">
+                    {[item.overallPeriod, item.overallDuration].filter(Boolean).join(' · ')}
+                  </p>
+                )}
+
+                {item.company && (
+                  <h2 class="mt-2 font-heading text-headline-sm font-medium tracking-tight text-ink">
+                    {item.company}
+                  </h2>
+                )}
+
+                {(item.type || item.location) && (
+                  <p class="mt-2 text-body-md text-ink-muted">
+                    {[item.type, item.location].filter(Boolean).join(' · ')}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {(item.roles ?? []).length > 0 && (
+              <div class="mt-5 space-y-4 border-t border-outline-variant pt-5">
+                {(item.roles ?? []).map((role) => (
+                  <section class="rounded-card border border-outline-variant bg-surface-container-lowest p-4">
+                    {(role.period || role.duration) && (
+                      <p class="text-label-sm uppercase text-ink-subtle">
+                        {[role.period, role.duration].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
+
+                    {role.title && (
+                      <h3 class="mt-2 font-heading text-lg font-medium tracking-tight text-ink">
+                        {role.title}
+                      </h3>
+                    )}
+
+                    {role.description && (
+                      <p class="mt-3 text-body-md text-ink-muted">
+                        {role.description}
+                      </p>
+                    )}
+
+                    {(role.skills ?? []).length > 0 && (
+                      <div class="mt-3 flex flex-wrap gap-2">
+                        {(role.skills ?? []).map((skill) => (
+                          <Tag>{skill}</Tag>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                ))}
+              </div>
+            )}
           </article>
         </li>
       ))}
     </ol>
   </Section>
+  )}
 </BaseLayout>

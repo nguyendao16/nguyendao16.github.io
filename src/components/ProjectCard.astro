@@ -10,8 +10,8 @@ interface Props {
   metrics?: Array<{ label: string; value: string }>;
   githubUrl?: string;
   demoUrl?: string;
-  image: string;
-  imageAlt: string;
+  image?: string;
+  imageAlt?: string;
   href?: string;
   tags?: string[];
 }
@@ -33,15 +33,17 @@ const {
 
 <article class="card overflow-hidden">
   <div class="grid lg:grid-cols-[0.9fr_1.1fr]">
-    <div class="order-1">
-      <a href={href} class="block h-full" aria-label={`Open ${title}`}>
-        <img
-          src={image}
-          alt={imageAlt}
-          class="aspect-[16/10] h-full w-full object-cover lg:aspect-auto lg:min-h-full"
-        />
-      </a>
-    </div>
+    {image && (
+      <div class="order-1">
+        <a href={href} class="block h-full" aria-label={`Open ${title}`}>
+          <img
+            src={image}
+            alt={imageAlt ?? `${title} preview`}
+            class="aspect-[16/10] h-full w-full object-cover lg:aspect-auto lg:min-h-full"
+          />
+        </a>
+      </div>
+    )}
 
     <div class="order-2 flex flex-col gap-5 p-5 sm:p-6">
       <div class="space-y-3">
