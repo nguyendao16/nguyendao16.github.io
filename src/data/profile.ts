@@ -1,64 +1,73 @@
 export const profile = {
   name: 'Đào Khôi Nguyên',
-  title: 'Machine Learning and Computer Vision Student',
-  headline: 'Building practical computer vision systems.',
+  title: 'Artificial Intelligence Student',
+  headline: 'Bridging fundamental mathematics, AI models, and robust system architecture.',
   intro:
-    'I design and ship applied machine learning projects, technical writeups, and portfolio work that is easy to review and easy to maintain.',
+    'I design and implement AI solutions with a strong focus on first-principles understanding, mathematical logic, and building practical systems from the ground up.',
   bio:
-    'My focus is practical computer vision, model evaluation, and technical communication. I like turning research ideas into clean, explainable systems that can be presented clearly to recruiters, collaborators, and instructors.',
-  email: 'hello@example.com',
-  githubUrl: 'https://github.com/username',
-  linkedinUrl: 'https://linkedin.com/in/username',
+    'With a foundational background transitioning from medicine to Artificial Intelligence, my core focus lies in Deep Learning, Reinforcement Learning, and Computer Vision. I am passionate about understanding the mathematical core of algorithms—from linear algebra to statistical distributions—and translating them into robust software. Beyond training models, I actively manage Linux environments, build backend middleware, and work with low-level data structures to ensure my systems run on solid infrastructure.',
+  email: 'daokhoinguyen.go@gmail.com',
+  githubUrl: 'https://github.com/nguyendao16',
+  linkedinUrl: 'https://www.linkedin.com/in/nguyendao16/',
   location: 'Hanoi, Vietnam',
   education: [
     {
-      period: '2022 - 2026',
-      title: 'Bachelor of Science, Computer Science',
-      institution: 'University of Technology',
+      period: '2024 - 2028',
+      title: 'Bachelor of Artificial Intelligence',
+      institution: 'FPT University',
       description:
-        'Coursework in machine learning, computer vision, statistics, and software engineering.',
+        'Rigorous coursework in Deep Learning, Computer Vision, and core mathematics. Actively preparing for the National Mathematics Olympiad.',
     },
+    {
+      period: 'Previous',
+      title: 'Medical Studies (Foundation)',
+      institution: 'Thai Nguyen University of Medicine and Pharmacy',
+      description:
+        'Completed foundational medical studies, providing a unique perspective for handling and authenticating healthcare datasets in AI research.',
+    }
   ],
   researchInterests: [
-    'Computer vision',
-    'Model evaluation',
-    'Edge inference',
-    'Data visualization',
+    'Deep Learning & Reinforcement Learning',
+    'Computer Vision',
+    'Healthcare Datasets & Medical AI',
+    'Mathematical Modeling'
   ],
   skills: [
     'Python',
-    'PyTorch',
-    'TensorFlow',
-    'OpenCV',
-    'scikit-learn',
-    'MLOps',
-    'Data Analysis',
-    'Research Writing',
+    'C++',
+    'Linux/Debian System Admin',
+    'Docker',
+    'Calculus & Linear Algebra',
+    'Deep Learning Frameworks'
   ],
-  timeline: [
+  workExperience: [
     {
-      period: '2026',
-      title: 'KNN handwriting classification',
-      description:
-        'Built a compact benchmark comparing cosine and Euclidean distance for handwritten digit recognition.',
-    },
-    {
-      period: '2025',
-      title: 'Model comparison study',
-      description:
-        'Evaluated a set of classical ML models under the same preprocessing and validation pipeline.',
-    },
-    {
-      period: '2024',
-      title: 'Data visualization project',
-      description:
-        'Created an exploratory dashboard to present key patterns in a tabular dataset clearly.',
+      company: '10 Group Vietnam Technology And Education Company Limited',
+      type: 'Part-time',
+      location: 'Remote',
+      overallPeriod: 'Jun 2025 - Dec 2025',
+      overallDuration: '7 mos',
+      roles: [
+        {
+          title: 'Automation Architect',
+          period: 'Jun 2025 - Dec 2025',
+          duration: '7 mos',
+          skills: ['Python (Programming Language)', 'n8n'],
+          description: '' // Optional description for this specific role
+        },
+        {
+          title: 'AI Engineer',
+          period: 'Jul 2025 - Dec 2025',
+          duration: '6 mos',
+          skills: ['LangChain', 'Git'],
+          description: '' // Optional description for this specific role
+        }
+      ]
     },
   ],
   resumeHighlights: [
-    'Hands-on experience with applied ML and computer vision workflows',
-    'Clear documentation for projects, experiments, and technical findings',
-    'Strong emphasis on evaluation, reproducibility, and presentation',
-    'Comfortable moving between research ideas and production-minded implementation',
+    'Strong mathematical foundation with active preparation for national-level Olympiad competitions.',
+    'Practical experience managing Linux servers, Docker containers, and Nginx reverse proxies.',
+    'Unique interdisciplinary background combining medical knowledge with advanced artificial intelligence research.'
   ],
 } as const;
