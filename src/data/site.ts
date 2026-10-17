@@ -30,9 +30,10 @@ export type PageContent = {
 export type AboutPageContent = PageContent & {
   eyebrow?: string;
   educationTitle: string;
-  skillsTitle: string;
-  researchTitle: string;
   experienceTitle: string;
+  projectsTitle: string;
+  skillsTitle: string;
+  certificationsTitle: string;
 };
 
 export type ContactSubject = {
@@ -150,11 +151,12 @@ export const site: SiteContent = {
     about: {
       title: 'About',
       eyebrow: 'About me',
-      description: 'Profile, education, skills, research interests, and experience.',
+      description: 'Profile, education, experience, projects, technology skills, and certifications.',
       educationTitle: 'Education',
-      skillsTitle: 'Skills',
-      researchTitle: 'Research interests',
       experienceTitle: 'Experience',
+      projectsTitle: 'Projects',
+      skillsTitle: 'Technology Skills',
+      certificationsTitle: 'Certifications',
     },
     projects: {
       title: 'Projects',
