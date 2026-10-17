@@ -108,11 +108,13 @@ The private `nguyendao16/stock-predict` workflow renders desktop/mobile PNGs and
 
 - `history.png`, `history-mobile.png`: history without a forecast.
 - `forecast.png`, `forecast-mobile.png`: history with the direction marker.
-- `summary.json`: the latest price/change, source/update dates, and forecast direction/issue/expiry dates. No price series, model files, or credentials.
+- `summary.json`: the latest price/change, source/update dates, forecast direction/issue/expiry dates, and aggregate prediction counts. No price series, model files, or credentials.
 
 The browser removes the forecast marker at the target session's close, including when returning to an old tab. New releases appear on a page load after the normal Pages deployment. A failed refresh leaves the previous published files intact. PNGs do not expose a downloadable source dataset or per-point tooltips, although visitors can still read or approximate prices from the image.
 
 Automatic publication uses a dedicated SSH write deploy key for this repository. Its private half is stored only as `FPT_SITE_DEPLOY_KEY` in the **private stock-predict repository's Actions secrets**; the website needs no private-repository access. Do not store a personal GitHub token in the workflow. After a successful weekly CD, and at 16:30/18:30 Vietnam time on weekdays, the private workflow refreshes prices, runs inference, and commits the five public outputs. The existing Pages workflow handles that commit.
 
 Validate chart parsing and expiry with `node --test tests/fpt-chart.test.mjs`; run `npm run build` for Astro type checking and the static build.
+
+The counter beside the chart (below it on mobile) shows correct/incorrect totals across all forecasts actually issued by the pipeline. Pending and unscorable sessions are excluded from both totals. The private pipeline scores the original forecasts after each target session closes and its label is available, then publishes only four `performance` counts: `correct`, `incorrect`, `pending`, `unscorable`. It includes earlier model versions, never backtests or hypothetical forecasts; rerunning does not double-count records.
 

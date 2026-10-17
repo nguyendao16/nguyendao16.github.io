@@ -8,6 +8,7 @@ const summary = {
   last_close: 58200, change: 200, change_percent: 200 / 58000 * 100,
   forecast: { target_session: '2026-10-19', issued_at: '2026-10-16T10:00:00Z',
     expires_at: '2026-10-19T08:00:00Z', direction: 'not_up' },
+  performance: { correct: 0, incorrect: 0, pending: 1, unscorable: 0 },
 };
 
 test('only accepts the public result contract, with no history or model fields', () => {
@@ -20,6 +21,18 @@ test('only accepts the public result contract, with no history or model fields',
     { ...summary, forecast: { ...summary.forecast, probability: .49 } },
     { ...summary, forecast: { ...summary.forecast, expires_at: summary.forecast.issued_at } }]) {
     assert.throws(() => parseChartSummary(invalid));
+  }
+});
+
+test('performance contains only four nonnegative whole-number totals', () => {
+  assert.deepEqual(parseChartSummary({ ...summary,
+    performance: { correct: 12, incorrect: 8, pending: 1, unscorable: 2 },
+  }).performance, { correct: 12, incorrect: 8, pending: 1, unscorable: 2 });
+  for (const performance of [null, [], undefined, { ...summary.performance, correct: -1 },
+    { ...summary.performance, incorrect: .5 }, { ...summary.performance, pending: '1' },
+    { ...summary.performance, unscorable: NaN }, { ...summary.performance, correct: Number.MAX_SAFE_INTEGER + 1 },
+    { ...summary.performance, predictions: [] }]) {
+    assert.throws(() => parseChartSummary({ ...summary, performance }));
   }
 });
 

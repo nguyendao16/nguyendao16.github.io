@@ -1,6 +1,6 @@
 {
   "source_session": "2026-10-16",
-  "updated_at": "2026-10-17T17:27:08.456221+00:00",
+  "updated_at": "2026-10-17T18:04:16.724400+00:00",
   "last_close": 58200.0,
   "change": 200.0,
   "change_percent": 0.3448275862068966,
@@ -9,5 +9,11 @@
     "issued_at": "2026-10-17T16:16:00.280809+00:00",
     "expires_at": "2026-10-19T08:00:00+00:00",
     "direction": "not_up"
+  },
+  "performance": {
+    "correct": 0,
+    "incorrect": 0,
+    "pending": 1,
+    "unscorable": 0
   }
 }
