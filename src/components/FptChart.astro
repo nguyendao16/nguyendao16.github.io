@@ -71,17 +71,17 @@ const forecast = summary.forecast;
         </picture>
         <aside class="w-28 justify-self-end text-body-sm" aria-label="Kết quả dự đoán" data-fpt-performance>
           <dl class="space-y-1">
-            <div class="flex items-center justify-between gap-4 text-emerald-700">
-              <dt>Đúng</dt>
-              <dd class="font-medium tabular-nums" data-fpt-correct>{number.format(summary.performance.correct)}</dd>
+            <div class="flex items-center justify-between gap-4">
+              <dt class="text-emerald-700">Đúng</dt>
+              <dd class="font-medium tabular-nums text-emerald-700" data-fpt-correct>{number.format(summary.performance.correct)}</dd>
             </div>
-            <div class="flex items-center justify-between gap-4 text-red-700">
-              <dt>Sai</dt>
-              <dd class="font-medium tabular-nums" data-fpt-incorrect>{number.format(summary.performance.incorrect)}</dd>
+            <div class="flex items-center justify-between gap-4">
+              <dt class="text-red-700">Sai</dt>
+              <dd class="font-medium tabular-nums text-red-700" data-fpt-incorrect>{number.format(summary.performance.incorrect)}</dd>
             </div>
-            <div class="flex items-center justify-between gap-4 text-ink-muted">
-              <dt>Chờ</dt>
-              <dd class="font-medium tabular-nums" data-fpt-pending-count>{number.format(summary.performance.pending)}</dd>
+            <div class="flex items-center justify-between gap-4">
+              <dt class="text-ink-muted">Chờ</dt>
+              <dd class="font-medium tabular-nums text-ink-muted" data-fpt-pending-count>{number.format(summary.performance.pending)}</dd>
             </div>
           </dl>
         </aside>
