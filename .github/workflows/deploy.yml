@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Test FPT chart
+        run: node --test tests/fpt-chart.test.mjs
+
       - name: Build site
         run: npm run build
 

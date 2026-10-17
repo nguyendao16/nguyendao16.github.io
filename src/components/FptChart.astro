@@ -1,0 +1,101 @@
+---
+import Section from './Section.astro';
+import { parseChartSummary } from '../utils/fpt-chart.mjs';
+import result from '../../public/fpt/summary.json';
+
+const summary = parseChartSummary(result);
+const number = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
+const percent = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 2, signDisplay: 'exceptZero' });
+const date = (value: string) => new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date(value));
+const updated = new Intl.DateTimeFormat('vi-VN', {
+  timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'short', timeStyle: 'short',
+}).format(new Date(summary.updated_at));
+const tone = summary.change > 0 ? 'text-emerald-700' : summary.change < 0 ? 'text-red-700' : 'text-ink-muted';
+const asset = (name: string) => `${import.meta.env.BASE_URL}fpt/${name}.png?v=${Date.parse(summary.updated_at)}`;
+const forecast = summary.forecast;
+---
+
+<Section title="FPT · Lịch sử và dự báo">
+  <figure
+    class="mt-6"
+    data-fpt-chart
+    data-issued-at={forecast?.issued_at}
+    data-expires-at={forecast?.expires_at}
+  >
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="font-mono text-label-sm text-ink-subtle">HOSE: FPT · 60 phiên giao dịch</p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <p class="font-heading text-headline-md font-medium tabular-nums sm:text-headline-lg">
+                {number.format(summary.last_close)} <span class="text-body-md font-normal text-ink-muted">VNĐ</span>
+              </p>
+              <p class:list={['text-body-md font-medium tabular-nums', tone]}>
+                {summary.change > 0 ? '↑' : summary.change < 0 ? '↓' : '→'} {percent.format(summary.change_percent)}%
+                <span class="ml-2 text-body-sm font-normal">{summary.change > 0 ? '+' : ''}{number.format(summary.change)} VNĐ</span>
+              </p>
+            </div>
+          </div>
+          <div aria-live="polite" class="text-body-sm">
+            <p data-fpt-pending class="text-ink-muted">Chưa có dự báo mới</p>
+            {forecast && (
+              <p data-fpt-forecast hidden class:list={[
+                'rounded-button px-3 py-2 font-medium',
+                forecast.direction === 'up' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700',
+              ]}>
+                {forecast.direction === 'up' ? '↗' : '↘'} {date(forecast.target_session)} · {forecast.direction === 'up' ? 'Dự báo tăng' : 'Dự báo không tăng'}
+              </p>
+            )}
+          </div>
+        </div>
+        <picture class="mt-4 block">
+          <source
+            media="(max-width: 639px)"
+            srcset={asset('history-mobile')}
+            data-history={asset('history-mobile')}
+            data-forecast={asset('forecast-mobile')}
+            width="1080"
+            height="756"
+          />
+          <img
+            src={asset('history')}
+            data-history={asset('history')}
+            data-forecast={asset('forecast')}
+            alt={`Đường giá đóng cửa FPT trong 60 phiên, đến ${date(summary.source_session)}. Giá cuối ${number.format(summary.last_close)} VNĐ.`}
+            width="2160"
+            height="756"
+            class="h-auto w-full"
+            loading="lazy"
+            decoding="async"
+          />
+        </picture>
+        <figcaption class="mt-2 space-y-1 text-body-sm text-ink-subtle">
+          <p>Dữ liệu phiên <time datetime={summary.source_session}>{date(summary.source_session)}</time> · Cập nhật <time datetime={summary.updated_at}>{updated}</time> (giờ Việt Nam)</p>
+          <p data-fpt-note hidden>Đuôi nét đứt chỉ biểu thị hướng, không dự báo mức giá. “Không tăng” gồm giảm hoặc đi ngang.</p>
+        </figcaption>
+    <p class="mt-4 text-body-sm text-ink-subtle">Model được CI/CD liên tục bằng Github Action, train trên Kaggle, dữ liệu thu thập cá nhân</p>
+  </figure>
+</Section>
+
+<script>
+  import { isForecastCurrent } from '../utils/fpt-chart.mjs';
+
+  document.querySelectorAll<HTMLElement>('[data-fpt-chart]').forEach((chart) => {
+    const timing = { issued_at: chart.dataset.issuedAt ?? '', expires_at: chart.dataset.expiresAt ?? '' };
+    let timer: ReturnType<typeof setTimeout>;
+    const update = () => {
+      clearTimeout(timer);
+      const current = isForecastCurrent(timing);
+      const image = chart.querySelector('img');
+      const source = chart.querySelector('source');
+      if (image) image.src = (current ? image.dataset.forecast : image.dataset.history) ?? image.src;
+      if (source) source.srcset = (current ? source.dataset.forecast : source.dataset.history) ?? source.srcset;
+      const pending = chart.querySelector<HTMLElement>('[data-fpt-pending]');
+      if (pending) pending.hidden = current;
+      chart.querySelectorAll<HTMLElement>('[data-fpt-forecast], [data-fpt-note]').forEach((element) => { element.hidden = !current; });
+      if (current) timer = setTimeout(update, Math.min(Date.parse(timing.expires_at) - Date.now(), 2_147_483_647));
+    };
+    update();
+    window.addEventListener('pageshow', update);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });
+  });
+</script>

@@ -5,6 +5,7 @@ import Hero from '../components/Hero.astro';
 import Section from '../components/Section.astro';
 import Button from '../components/Button.astro';
 import BlogCard from '../components/BlogCard.astro';
+import FptChart from '../components/FptChart.astro';
 import { profile } from '../data/profile';
 import { site } from '../data/site';
 
@@ -27,6 +28,8 @@ const heroDescription = profile.intro ?? profile.bio ?? site.seo.description;
   >
     <Button href="/contact" variant="secondary">{site.pages.home.contactCtaLabel}</Button>
   </Hero>
+
+  <FptChart />
 
   <Section
     title={site.pages.home.latestPostsTitle}
