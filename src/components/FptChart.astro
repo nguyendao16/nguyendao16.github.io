@@ -15,7 +15,10 @@ const tone = summary.change > 0 ? 'text-emerald-700' : summary.change < 0 ? 'tex
 const forecast = summary.forecast;
 ---
 
-<Section title="FPT · Price history and forecast">
+<Section
+  title="FPT · Price history and forecast"
+  description="The model uses continuous integration and deployment through GitHub Actions, training on Kaggle, and personally collected data."
+>
   <figure
     class="mt-6"
     data-fpt-chart
@@ -65,11 +68,9 @@ const forecast = summary.forecast;
           </dl>
         </aside>
         </div>
-        <figcaption class="mt-2 space-y-1 text-body-sm text-ink-subtle">
+        <figcaption class="mt-2 text-body-sm text-ink-subtle">
           <p>Session data: <time datetime={summary.source_session}>{date(summary.source_session)}</time> · Updated: <time datetime={summary.updated_at}>{updated}</time> (Vietnam time)</p>
-          <p data-fpt-note hidden>The dashed line shows direction only, not a predicted price. “No increase” includes both a decline and an unchanged price.</p>
         </figcaption>
-    <p class="mt-4 text-body-sm text-ink-subtle">The model uses continuous integration and deployment through GitHub Actions, training on Kaggle, and personally collected data.</p>
   </figure>
 </Section>
 

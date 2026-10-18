@@ -56,18 +56,6 @@ const shortDate = (date: string) => `${date.slice(5, 7)}/${date.slice(8, 10)}`;
     </svg>
     <output data-fpt-tooltip hidden class="pointer-events-none absolute top-9 z-10 w-max max-w-full rounded-button border border-border bg-white px-3 py-2 text-body-sm text-ink shadow-soft" aria-live="polite"></output>
   </div>
-  <div data-fpt-controls hidden class="mt-1 flex flex-wrap items-center justify-between gap-2 text-body-sm text-ink-subtle">
-    <p data-fpt-range>Last 60 trading sessions</p>
-    <div class="flex gap-1" role="group" aria-label="Chart range">
-      <button type="button" data-fpt-zoom-out aria-label="Zoom out" class="rounded-button border border-border px-3 py-1 disabled:opacity-40">−</button>
-      <button type="button" data-fpt-zoom-in aria-label="Zoom in" class="rounded-button border border-border px-3 py-1 disabled:opacity-40">+</button>
-      <button type="button" data-fpt-reset class="rounded-button border border-border px-3 py-1">Reset</button>
-    </div>
-  </div>
-  <p id="fpt-line-help" class="mt-2 text-body-sm text-ink-subtle">Hover or tap to view prices · Drag horizontally after zooming in.<span class="sr-only"> Use the +/− buttons or hold Ctrl and scroll to zoom. Keyboard: ←/→ to inspect each session, Home to reset.</span></p>
-  <noscript><p class="mt-2 text-body-sm text-ink-muted">Enable JavaScript to view prices for individual sessions and use the chart controls.</p></noscript>
+  <p id="fpt-line-help" class="sr-only">Hover or tap to view prices. Hold Ctrl and scroll to zoom, then drag horizontally to pan. Keyboard: ←/→ to inspect each session, +/− to zoom, Home to reset.</p>
+  <noscript><p class="sr-only">Enable JavaScript to view prices for individual sessions and use the chart controls.</p></noscript>
 </div>
-
-<style>
-  [data-fpt-controls][hidden] { display: none; }
-</style>

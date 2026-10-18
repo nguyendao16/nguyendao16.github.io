@@ -6,8 +6,6 @@ export function initFptChart(chart: HTMLElement) {
   const tooltip = chart.querySelector<HTMLOutputElement>('[data-fpt-tooltip]')!;
   const crosshair = chart.querySelector<SVGGElement>('[data-fpt-crosshair]')!;
   const tail = chart.querySelector<SVGGElement>('[data-fpt-tail]')!;
-  const zoomIn = chart.querySelector<HTMLButtonElement>('[data-fpt-zoom-in]')!;
-  const zoomOut = chart.querySelector<HTMLButtonElement>('[data-fpt-zoom-out]')!;
   const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
   const date = (value: string) => new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Ho_Chi_Minh', month: '2-digit', day: '2-digit', year: 'numeric',
@@ -85,9 +83,6 @@ export function initFptChart(chart: HTMLElement) {
     geometry.dates.forEach((tick, index) => node('text', {
       x: tick.x, y: 292, 'text-anchor': index === 0 ? 'start' : index === geometry.dates.length - 1 ? 'end' : 'middle',
     }, date(tick.date).slice(0, 5)));
-    chart.querySelector('[data-fpt-range]')!.textContent = `${date(geometry.points[0].date)} – ${date(geometry.points.at(-1)!.date)} · ${range.end - range.start} trading sessions`;
-    zoomIn.disabled = range.end - range.start <= 5;
-    zoomOut.disabled = range.end - range.start === 60;
   };
   const zoom = (factor: number, anchor = range.end === 60 ? 1 : .5) => {
     const count = range.end - range.start;
@@ -150,18 +145,14 @@ export function initFptChart(chart: HTMLElement) {
     }
     showTooltip(selected - range.start);
   });
-  zoomIn.addEventListener('click', () => zoom(2 / 3));
-  zoomOut.addEventListener('click', () => zoom(1.5));
-  chart.querySelector('[data-fpt-reset]')!.addEventListener('click', () => { range = chartWindow(0, 60); render(); });
   const update = () => {
     clearTimeout(timer);
     current = isForecastCurrent(summary.forecast);
     chart.querySelector<HTMLElement>('[data-fpt-pending]')!.hidden = current;
-    chart.querySelectorAll<HTMLElement>('[data-fpt-forecast], [data-fpt-note]').forEach((element) => { element.hidden = !current; });
+    chart.querySelectorAll<HTMLElement>('[data-fpt-forecast]').forEach((element) => { element.hidden = !current; });
     render();
     if (current && summary.forecast) timer = setTimeout(update, Math.min(Date.parse(summary.forecast.expires_at) - Date.now(), 2_147_483_647));
   };
-  chart.querySelector<HTMLElement>('[data-fpt-controls]')!.hidden = false;
   new ResizeObserver(render).observe(svg);
   window.addEventListener('pageshow', update);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });
