@@ -19,7 +19,7 @@ const { previous, next } = getAdjacentBlogPosts(posts, post.slug);
 ---
 
 <BlogPostLayout
-  title={post.data.seoTitle ?? post.data.title}
+  title={post.data.title}
   description={post.data.seoDescription ?? post.data.description}
   date={post.data.date}
   updatedDate={post.data.updatedDate}
