@@ -113,10 +113,10 @@ export type SiteContent = {
 };
 
 export const site: SiteContent = {
-  brand: 'AI CV Portfolio',
+  brand: 'Đào Khôi Nguyên',
   seo: {
-    defaultTitle: 'AI CV Portfolio',
-    titleTemplate: '%s | AI CV Portfolio',
+    defaultTitle: 'Đào Khôi Nguyên',
+    titleTemplate: '%s | Đào Khôi Nguyên',
     description: 'AI and computer vision portfolio and technical blog.',
     themeColor: '#ffffff',
     siteUrl: 'https://USERNAME.github.io',
@@ -134,7 +134,6 @@ export const site: SiteContent = {
   pages: {
     home: {
       seoTitle: 'Home',
-      eyebrow: 'AI CV Portfolio',
       latestPostsTitle: 'Bài viết mới nhất',
       contactCtaLabel: 'Liên hệ',
       heroImages: {
@@ -219,8 +218,8 @@ export const site: SiteContent = {
     },
   },
   footer: {
-    brand: 'AI CV Portfolio',
+    brand: 'Đào Khôi Nguyên',
     description: 'Machine learning and computer vision portfolio for recruiters and collaborators.',
-    copyright: '© 2026 AI CV Portfolio. All rights reserved.',
+    copyright: '© 2026 Đào Khôi Nguyên. All rights reserved.',
   },
 };
