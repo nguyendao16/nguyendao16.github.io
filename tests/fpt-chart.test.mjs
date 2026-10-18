@@ -87,9 +87,9 @@ test('forecast is valid across the weekend and expires exactly at target session
   assert.equal(isForecastCurrent(null), false);
 });
 
-test('home places the chart before latest posts and keeps the exact requested note', () => {
+test('home places the chart before latest posts and keeps the model workflow note in English', () => {
   const home = readFileSync(new URL('../src/pages/index.astro', import.meta.url), 'utf8');
   const component = readFileSync(new URL('../src/components/FptChart.astro', import.meta.url), 'utf8');
   assert.ok(home.indexOf('<FptChart />') < home.indexOf('title={site.pages.home.latestPostsTitle}'));
-  assert.ok(component.includes('Model được CI/CD liên tục bằng Github Action, train trên Kaggle, dữ liệu thu thập cá nhân'));
+  assert.ok(component.includes('The model uses continuous integration and deployment through GitHub Actions, training on Kaggle, and personally collected data.'));
 });

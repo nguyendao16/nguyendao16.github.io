@@ -134,8 +134,8 @@ export const site: SiteContent = {
   pages: {
     home: {
       seoTitle: 'Home',
-      latestPostsTitle: 'Bài viết mới nhất',
-      contactCtaLabel: 'Liên hệ',
+      latestPostsTitle: 'Latest posts',
+      contactCtaLabel: 'Contact',
       heroImages: {
         desktop: {
           src: '/images/home/hero-desktop.svg',
@@ -187,7 +187,7 @@ export const site: SiteContent = {
       pdfTitle: 'Resume PDF preview',
     },
     contact: {
-      title: 'Liên hệ',
+      title: 'Contact',
       description:
         'Get in touch for collaborations, internships, project feedback, or research discussions.',
       formLabels: {
@@ -219,7 +219,6 @@ export const site: SiteContent = {
   },
   footer: {
     brand: 'Đào Khôi Nguyên',
-    description: 'Machine learning and computer vision portfolio for recruiters and collaborators.',
     copyright: '© 2026 Đào Khôi Nguyên. All rights reserved.',
   },
 };

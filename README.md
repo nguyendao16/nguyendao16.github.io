@@ -102,7 +102,7 @@ The GitHub Actions workflow:
 
 ## FPT chart on the homepage
 
-The chart appears above “Bài viết mới nhất”. It shows 60 sessions of actual closing prices; the latest close compared with that session's official reference sets the whole history region's color. The dashed tail shows only the model's direction, without inventing a target price or return. “Không tăng” includes both a decline and an unchanged price.
+The chart appears above “Latest posts”. It shows 60 sessions of actual closing prices; the latest close compared with that session's official reference sets the whole history region's color. The dashed tail shows only the model's direction, without inventing a target price or return. “No increase” includes both a decline and an unchanged price.
 
 The private `nguyendao16/stock-predict` workflow publishes one file, `public/fpt/summary.json`: exactly 60 ordered `{date, close}` points, the latest price/change, source/update dates, forecast direction/issue/expiry dates, and aggregate prediction counts. The exporter uses a field allowlist; no older prices, OHLCV, per-session reference prices, model files, features, internal probabilities, forecast ledger or credentials are published. The website validates this contract during the build and in the browser.
 

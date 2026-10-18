@@ -23,9 +23,9 @@ describe('Global site layout', () => {
     assert.match(navbar, /lg:flex/);
     assert.match(navbar, /lg:hidden/);
     assert.match(navbar, /details|summary/);
-    assert.match(navigation, /Trang chủ/);
+    assert.match(navigation, /Home/);
     assert.match(navigation, /Blog/);
-    assert.match(navigation, /Về tôi/);
+    assert.match(navigation, /About/);
     assert.match(navigation, /Contact/);
   });
 

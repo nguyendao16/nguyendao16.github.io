@@ -8,8 +8,10 @@ export function initFptChart(chart: HTMLElement) {
   const tail = chart.querySelector<SVGGElement>('[data-fpt-tail]')!;
   const zoomIn = chart.querySelector<HTMLButtonElement>('[data-fpt-zoom-in]')!;
   const zoomOut = chart.querySelector<HTMLButtonElement>('[data-fpt-zoom-out]')!;
-  const number = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
-  const date = (value: string) => `${value.slice(8, 10)}/${value.slice(5, 7)}/${value.slice(0, 4)}`;
+  const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+  const date = (value: string) => new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Ho_Chi_Minh', month: '2-digit', day: '2-digit', year: 'numeric',
+  }).format(new Date(value));
   let range = chartWindow(0, 60);
   let geometry = chartGeometry(summary, 800, range);
   let selected = 59;
@@ -29,14 +31,14 @@ export function initFptChart(chart: HTMLElement) {
     let x: number;
     if (index === null) {
       if (!current || range.end !== 60 || !summary.forecast) return hideTooltip();
-      tooltip.textContent = `${date(summary.forecast.target_session)} · ${summary.forecast.direction === 'up' ? 'Dự báo tăng' : 'Dự báo không tăng'} · Chỉ hướng`;
+      tooltip.textContent = `${date(summary.forecast.target_session)} · ${summary.forecast.direction === 'up' ? 'Forecast: Up' : 'Forecast: No increase'} · Direction only`;
       x = geometry.right;
       crosshair.style.display = 'none';
     } else {
       selected = range.start + index;
       const point = geometry.points[index];
       const coordinate = geometry.coordinates[index];
-      tooltip.textContent = `${date(point.date)} · ${number.format(point.close)} VNĐ`;
+      tooltip.textContent = `${date(point.date)} · ${number.format(point.close)} VND`;
       x = coordinate.x;
       crosshair.style.display = '';
       attrs('[data-fpt-crosshair] line', { x1: x, x2: x });
@@ -75,7 +77,7 @@ export function initFptChart(chart: HTMLElement) {
       if (text) element.textContent = text;
       grid.append(element);
     };
-    node('text', { x: 0, y: 16 }, 'VNĐ');
+    node('text', { x: 0, y: 16 }, 'VND');
     geometry.prices.forEach((tick) => {
       node('line', { x1: left, x2: right, y1: tick.y, y2: tick.y, stroke: 'var(--color-surface-container-high)' });
       node('text', { x: left - 9, y: tick.y + 4, 'text-anchor': 'end' }, number.format(tick.value));
@@ -83,7 +85,7 @@ export function initFptChart(chart: HTMLElement) {
     geometry.dates.forEach((tick, index) => node('text', {
       x: tick.x, y: 292, 'text-anchor': index === 0 ? 'start' : index === geometry.dates.length - 1 ? 'end' : 'middle',
     }, date(tick.date).slice(0, 5)));
-    chart.querySelector('[data-fpt-range]')!.textContent = `${date(geometry.points[0].date)} – ${date(geometry.points.at(-1)!.date)} · ${range.end - range.start} phiên`;
+    chart.querySelector('[data-fpt-range]')!.textContent = `${date(geometry.points[0].date)} – ${date(geometry.points.at(-1)!.date)} · ${range.end - range.start} trading sessions`;
     zoomIn.disabled = range.end - range.start <= 5;
     zoomOut.disabled = range.end - range.start === 60;
   };

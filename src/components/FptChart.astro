@@ -5,17 +5,17 @@ import { parseChartSummary } from '../utils/fpt-chart.mjs';
 import result from '../../public/fpt/summary.json';
 
 const summary = parseChartSummary(result);
-const number = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
-const percent = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 2, signDisplay: 'exceptZero' });
-const date = (value: string) => new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date(value));
-const updated = new Intl.DateTimeFormat('vi-VN', {
+const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const percent = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2, signDisplay: 'exceptZero' });
+const date = (value: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', month: '2-digit', day: '2-digit', year: 'numeric' }).format(new Date(value));
+const updated = new Intl.DateTimeFormat('en-US', {
   timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'short', timeStyle: 'short',
 }).format(new Date(summary.updated_at));
 const tone = summary.change > 0 ? 'text-emerald-700' : summary.change < 0 ? 'text-red-700' : 'text-ink-muted';
 const forecast = summary.forecast;
 ---
 
-<Section title="FPT · Lịch sử và dự báo">
+<Section title="FPT · Price history and forecast">
   <figure
     class="mt-6"
     data-fpt-chart
@@ -23,53 +23,53 @@ const forecast = summary.forecast;
   >
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p class="font-mono text-label-sm text-ink-subtle">HOSE: FPT · 60 phiên giao dịch</p>
+            <p class="font-mono text-label-sm text-ink-subtle">HOSE: FPT · 60 trading sessions</p>
             <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
               <p class="font-heading text-headline-md font-medium tabular-nums sm:text-headline-lg">
-                {number.format(summary.last_close)} <span class="text-body-md font-normal text-ink-muted">VNĐ</span>
+                {number.format(summary.last_close)} <span class="text-body-md font-normal text-ink-muted">VND</span>
               </p>
               <p class:list={['text-body-md font-medium tabular-nums', tone]}>
                 {summary.change > 0 ? '↑' : summary.change < 0 ? '↓' : '→'} {percent.format(summary.change_percent)}%
-                <span class="ml-2 text-body-sm font-normal">{summary.change > 0 ? '+' : ''}{number.format(summary.change)} VNĐ</span>
+                <span class="ml-2 text-body-sm font-normal">{summary.change > 0 ? '+' : ''}{number.format(summary.change)} VND</span>
               </p>
             </div>
           </div>
           <div aria-live="polite" class="text-body-sm">
-            <p data-fpt-pending class="text-ink-muted">Chưa có dự báo mới</p>
+            <p data-fpt-pending class="text-ink-muted">No new forecast available</p>
             {forecast && (
               <p data-fpt-forecast hidden class:list={[
                 'rounded-button px-3 py-2 font-medium',
                 forecast.direction === 'up' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700',
               ]}>
-                {forecast.direction === 'up' ? '↗' : '↘'} {date(forecast.target_session)} · {forecast.direction === 'up' ? 'Dự báo tăng' : 'Dự báo không tăng'}
+                {forecast.direction === 'up' ? '↗' : '↘'} {date(forecast.target_session)} · {forecast.direction === 'up' ? 'Forecast: Up' : 'Forecast: No increase'}
               </p>
             )}
           </div>
         </div>
         <div class="mt-4 grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_7rem]">
         <FptLineChart summary={summary} />
-        <aside class="w-28 justify-self-end text-body-sm" aria-label="Kết quả dự đoán" data-fpt-performance>
+        <aside class="w-28 justify-self-end text-body-sm" aria-label="Prediction results" data-fpt-performance>
           <dl class="space-y-1">
             <div class="flex items-center justify-between gap-4">
-              <dt class="text-emerald-700">Đúng</dt>
+              <dt class="text-emerald-700">Correct</dt>
               <dd class="font-medium tabular-nums text-emerald-700" data-fpt-correct>{number.format(summary.performance.correct)}</dd>
             </div>
             <div class="flex items-center justify-between gap-4">
-              <dt class="text-red-700">Sai</dt>
+              <dt class="text-red-700">Incorrect</dt>
               <dd class="font-medium tabular-nums text-red-700" data-fpt-incorrect>{number.format(summary.performance.incorrect)}</dd>
             </div>
             <div class="flex items-center justify-between gap-4">
-              <dt class="text-ink-muted">Chờ</dt>
+              <dt class="text-ink-muted">Pending</dt>
               <dd class="font-medium tabular-nums text-ink-muted" data-fpt-pending-count>{number.format(summary.performance.pending)}</dd>
             </div>
           </dl>
         </aside>
         </div>
         <figcaption class="mt-2 space-y-1 text-body-sm text-ink-subtle">
-          <p>Dữ liệu phiên <time datetime={summary.source_session}>{date(summary.source_session)}</time> · Cập nhật <time datetime={summary.updated_at}>{updated}</time> (giờ Việt Nam)</p>
-          <p data-fpt-note hidden>Đuôi nét đứt chỉ biểu thị hướng, không dự báo mức giá. “Không tăng” gồm giảm hoặc đi ngang.</p>
+          <p>Session data: <time datetime={summary.source_session}>{date(summary.source_session)}</time> · Updated: <time datetime={summary.updated_at}>{updated}</time> (Vietnam time)</p>
+          <p data-fpt-note hidden>The dashed line shows direction only, not a predicted price. “No increase” includes both a decline and an unchanged price.</p>
         </figcaption>
-    <p class="mt-4 text-body-sm text-ink-subtle">Model được CI/CD liên tục bằng Github Action, train trên Kaggle, dữ liệu thu thập cá nhân</p>
+    <p class="mt-4 text-body-sm text-ink-subtle">The model uses continuous integration and deployment through GitHub Actions, training on Kaggle, and personally collected data.</p>
   </figure>
 </Section>
 

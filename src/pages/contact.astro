@@ -16,7 +16,7 @@ const subjects = site.pages.contact.subjects ?? [];
     title={site.pages.contact.title}
     description={site.pages.contact.description}
   >
-    <div class="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+    <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr_0.9fr]">
       <form
         action={emailLink}
         method="post"
@@ -77,7 +77,7 @@ const subjects = site.pages.contact.subjects ?? [];
           {site.pages.contact.directTitle && (
             <p class="text-label-sm uppercase text-ink-subtle">{site.pages.contact.directTitle}</p>
           )}
-          <a href={emailLink} class="mt-3 block font-heading text-headline-sm font-medium tracking-tight text-ink">
+          <a href={emailLink} class="mt-3 block break-words font-heading text-headline-sm font-medium tracking-tight text-ink">
             {socials.email}
           </a>
           {site.pages.contact.directDescription && (

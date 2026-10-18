@@ -9,7 +9,7 @@ export function getPublishedBlogPosts(posts: BlogPostEntry[]) {
 }
 
 export function formatBlogDate(date: Date) {
-  return new Intl.DateTimeFormat('en', {
+  return new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',

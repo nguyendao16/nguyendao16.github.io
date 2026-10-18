@@ -5,8 +5,8 @@ import type { ChartSummary } from '../utils/fpt-chart.mjs';
 interface Props { summary: ChartSummary }
 const { summary } = Astro.props;
 const geometry = chartGeometry(summary, 800, { start: 0, end: 60 });
-const number = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
-const shortDate = (date: string) => `${date.slice(8, 10)}/${date.slice(5, 7)}`;
+const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const shortDate = (date: string) => `${date.slice(5, 7)}/${date.slice(8, 10)}`;
 ---
 
 <div class="min-w-0" data-fpt-line-chart>
@@ -16,7 +16,7 @@ const shortDate = (date: string) => `${date.slice(8, 10)}/${date.slice(5, 7)}`;
       role="img" tabindex="0" aria-labelledby="fpt-line-title" aria-describedby="fpt-line-help"
       style="touch-action: pan-y; cursor: crosshair;"
     >
-      <title id="fpt-line-title">Giá đóng cửa FPT trong 60 phiên gần nhất</title>
+      <title id="fpt-line-title">FPT closing prices over the last 60 trading sessions</title>
       <defs>
         <linearGradient id="fpt-history-fill" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
           <stop offset="0%" stop-color={geometry.color} stop-opacity=".25" />
@@ -31,7 +31,7 @@ const shortDate = (date: string) => `${date.slice(8, 10)}/${date.slice(5, 7)}`;
         </marker>
       </defs>
       <g data-fpt-grid fill="var(--color-ink-subtle)" font-size="11">
-        <text x="0" y="16">VNĐ</text>
+        <text x="0" y="16">VND</text>
         {geometry.prices.map((tick) => <g>
           <line x1={geometry.left} x2={geometry.right} y1={tick.y} y2={tick.y} stroke="var(--color-surface-container-high)" />
           <text x={geometry.left - 9} y={tick.y + 4} text-anchor="end">{number.format(tick.value)}</text>
@@ -45,9 +45,9 @@ const shortDate = (date: string) => `${date.slice(8, 10)}/${date.slice(5, 7)}`;
       <g data-fpt-tail style="display: none;">
         <path data-fpt-tail-area fill="url(#fpt-forecast-fill)" />
         <path data-fpt-tail-line fill="none" stroke={summary.forecast?.direction === 'up' ? '#16834a' : '#d33c43'} stroke-width="2" stroke-dasharray="5 4" marker-end="url(#fpt-arrow)" />
-        <text data-fpt-tail-title y="14" text-anchor="middle" font-size="11" fill="var(--color-ink-muted)">Dự báo</text>
+        <text data-fpt-tail-title y="14" text-anchor="middle" font-size="11" fill="var(--color-ink-muted)">Forecast</text>
         <text data-fpt-tail-date y="29" text-anchor="middle" font-size="11" fill="var(--color-ink-subtle)">{summary.forecast ? shortDate(summary.forecast.target_session) : ''}</text>
-        <text data-fpt-tail-note y="292" text-anchor="middle" font-size="11" fill="var(--color-ink-subtle)">Chỉ hướng</text>
+        <text data-fpt-tail-note y="44" text-anchor="middle" font-size="11" fill="var(--color-ink-subtle)">Direction only</text>
       </g>
       <g data-fpt-crosshair style="display: none;" pointer-events="none">
         <line y1="30" y2={geometry.bottom} stroke="var(--color-outline)" stroke-dasharray="3 4" />
@@ -57,15 +57,15 @@ const shortDate = (date: string) => `${date.slice(8, 10)}/${date.slice(5, 7)}`;
     <output data-fpt-tooltip hidden class="pointer-events-none absolute top-9 z-10 w-max max-w-full rounded-button border border-border bg-white px-3 py-2 text-body-sm text-ink shadow-soft" aria-live="polite"></output>
   </div>
   <div data-fpt-controls hidden class="mt-1 flex flex-wrap items-center justify-between gap-2 text-body-sm text-ink-subtle">
-    <p data-fpt-range>60 phiên gần nhất</p>
-    <div class="flex gap-1" role="group" aria-label="Phạm vi biểu đồ">
-      <button type="button" data-fpt-zoom-out aria-label="Thu nhỏ biểu đồ" class="rounded-button border border-border px-3 py-1 disabled:opacity-40">−</button>
-      <button type="button" data-fpt-zoom-in aria-label="Phóng to biểu đồ" class="rounded-button border border-border px-3 py-1 disabled:opacity-40">+</button>
-      <button type="button" data-fpt-reset class="rounded-button border border-border px-3 py-1">Đặt lại</button>
+    <p data-fpt-range>Last 60 trading sessions</p>
+    <div class="flex gap-1" role="group" aria-label="Chart range">
+      <button type="button" data-fpt-zoom-out aria-label="Zoom out" class="rounded-button border border-border px-3 py-1 disabled:opacity-40">−</button>
+      <button type="button" data-fpt-zoom-in aria-label="Zoom in" class="rounded-button border border-border px-3 py-1 disabled:opacity-40">+</button>
+      <button type="button" data-fpt-reset class="rounded-button border border-border px-3 py-1">Reset</button>
     </div>
   </div>
-  <p id="fpt-line-help" class="mt-2 text-body-sm text-ink-subtle">Rê chuột/chạm xem giá · Kéo ngang sau khi phóng to.<span class="sr-only"> Dùng nút +/− hoặc Ctrl và cuộn để thu phóng. Bàn phím: ←/→ xem từng phiên, Home đặt lại.</span></p>
-  <noscript><p class="mt-2 text-body-sm text-ink-muted">Bật JavaScript để xem giá từng phiên và điều khiển biểu đồ.</p></noscript>
+  <p id="fpt-line-help" class="mt-2 text-body-sm text-ink-subtle">Hover or tap to view prices · Drag horizontally after zooming in.<span class="sr-only"> Use the +/− buttons or hold Ctrl and scroll to zoom. Keyboard: ←/→ to inspect each session, Home to reset.</span></p>
+  <noscript><p class="mt-2 text-body-sm text-ink-muted">Enable JavaScript to view prices for individual sessions and use the chart controls.</p></noscript>
 </div>
 
 <style>
