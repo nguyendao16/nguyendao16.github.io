@@ -38,7 +38,7 @@ const {
   next,
 } = Astro.props;
 
-const tocHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const tocHeadings = headings.filter((heading) => heading.depth === 2);
 const metaDescription = description;
 ---
 
@@ -55,9 +55,9 @@ const metaDescription = description;
     {coverImage && <meta property="og:image" content={coverImage} />}
   </Fragment>
 
-  <article class="site-container py-10 sm:py-12 lg:py-16">
-    <div class="mx-auto grid max-w-page gap-10 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
-      <div class="min-w-0">
+  <article class="px-page-sm py-10 sm:py-12 lg:px-page-lg lg:py-16">
+    <div class="mx-auto grid max-w-[1600px] gap-10 xl:grid-cols-[minmax(0,1fr)_minmax(0,680px)_minmax(0,1fr)] xl:items-start xl:gap-8">
+      <div class="mx-auto w-full min-w-0 max-w-reading xl:col-start-2">
         <div class="max-w-reading space-y-5">
           <div class="flex flex-wrap items-center gap-2">
             <p class="font-mono text-label-sm uppercase tracking-[0.08em] text-ink-subtle">
@@ -148,14 +148,14 @@ const metaDescription = description;
         </div>
       </div>
 
-      <aside class="lg:sticky lg:top-24">
+      <aside class="mx-auto w-full max-w-reading xl:sticky xl:top-24 xl:col-start-3 xl:row-start-1 xl:mx-0 xl:max-h-[calc(100vh-7rem)] xl:max-w-[256px] xl:overflow-y-auto">
         <div class="card-muted p-5">
           <p class="text-label-sm uppercase text-ink-subtle">{site.blogPost.tocLabel}</p>
           {tocHeadings.length > 0 ? (
             <nav aria-label="Table of contents" class="mt-4">
               <ul class="space-y-2">
                 {tocHeadings.map((heading) => (
-                  <li class:list={heading.depth === 3 ? 'pl-4' : ''}>
+                  <li>
                     <a
                       href={`#${heading.slug}`}
                       class="link-muted text-sm"

@@ -12,25 +12,31 @@ seoTitle: "Vanishing and Exploding Gradients in RNNs: Mathematical Derivation"
 seoDescription: "A step-by-step mathematical explanation of total derivatives, BPTT, Jacobian products, vanishing gradients, exploding gradients."
 ---
 
-Before reading this article, you should be familiar with:
+When you read this blog, I assume you are understanding:
 
-- RNN architecture.
-- How to compute an RNN's hidden states and outputs.
-- Backpropagation.
-- The tanh activation used in hidden-state updates.
+- RNN Architecture.
+- How to compute hidden state and output of RNN.
+- Backpropagration.
+- tanh is one of the update functions f.
 
-Many explanations of vanishing and exploding gradients in RNNs invoke the chain rule without clearly distinguishing two important concepts from multivariable calculus: the **total derivative** ($d$) and the **partial derivative** ($\partial$).
+There are many mathematical explanations about Vanishing Gradient and Exploding Gradient in RNNs in the Internet and AI, all of them talk about chain rule, but rarely sufficient. They are missing the different of two important multivariable calculus concepts: The Total derivative ($d$) and The Partial derivative ($\partial$).
 
-- The **partial derivative** measures how a function changes with respect to one variable while holding its other arguments constant.
-- The **total derivative** measures how a function changes with respect to a variable, accounting for all direct and indirect dependencies.
+The Partial derivative ($\partial$): Measures how a function changes with respect to one variable while holding the other variables constant.
 
-## 1. Total and partial derivatives
+The Total derivative ($d$): Measures how a function changes with respect to a variable, accounting for all direct and indirect dependencies.
 
-To understand the distinction, consider
+## 1. Total derivative and Partial derivative
+
+To understand total derivative, consider the following equations:
 
 $$
-y=x^2+z,
-\qquad z=3x.
+y=x^2+z
+$$
+
+where:
+
+$$
+z=3x
 $$
 
 Notice that $y$ depends on $x$ in two ways:
@@ -50,7 +56,9 @@ This only captures the direct effect of $x$ on $y$.
 
 ### Total derivative
 
-However, changing $x$ also changes $z$, which subsequently changes $y$. Therefore, we must account for both paths. By applying the chain rule:
+However, changing $x$ also changes $z$, which subsequently changes $y$.
+Therefore, we must account for both paths.
+By applying the chain rule:
 
 $$
 \boxed{
@@ -63,17 +71,21 @@ $$
 We already know:
 
 $$
-\frac{\partial y}{\partial x}=2x,
-\qquad
-\frac{\partial y}{\partial z}=1,
-\qquad
-\frac{dz}{dx}=3.
+\frac{\partial y}{\partial x}=2x
+$$
+
+$$
+\frac{\partial y}{\partial z}=1
+$$
+
+$$
+\frac{dz}{dx}=3
 $$
 
 Substituting:
 
 $$
-\frac{dy}{dx}=2x+1\cdot3.
+\frac{dy}{dx}=2x+1(3)
 $$
 
 Therefore:
@@ -82,7 +94,9 @@ $$
 \boxed{\frac{dy}{dx}=2x+3}
 $$
 
-This demonstrates the fundamental difference: the partial derivative only considers the direct dependency, while the total derivative accounts for every path through which the independent variable influences the output. This is exactly the principle used in Backpropagation Through Time (BPTT).
+This demonstrates the fundamental difference:
+The partial derivative only considers the direct dependency, while the total derivative accounts for every path through which the independent variable influences the output.
+This is exactly the principle used in Backpropagation Through Time (BPTT).
 
 ## 2. An RNN unrolled over three time steps
 
