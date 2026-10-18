@@ -1,0 +1,73 @@
+---
+import { chartGeometry } from '../utils/fpt-chart.mjs';
+import type { ChartSummary } from '../utils/fpt-chart.mjs';
+
+interface Props { summary: ChartSummary }
+const { summary } = Astro.props;
+const geometry = chartGeometry(summary, 800, { start: 0, end: 60 });
+const number = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
+const shortDate = (date: string) => `${date.slice(8, 10)}/${date.slice(5, 7)}`;
+---
+
+<div class="min-w-0" data-fpt-line-chart>
+  <div class="relative" data-fpt-plot>
+    <svg
+      viewBox="0 0 800 300" class="block h-[300px] w-full select-none"
+      role="img" tabindex="0" aria-labelledby="fpt-line-title" aria-describedby="fpt-line-help"
+      style="touch-action: pan-y; cursor: crosshair;"
+    >
+      <title id="fpt-line-title">Giá đóng cửa FPT trong 60 phiên gần nhất</title>
+      <defs>
+        <linearGradient id="fpt-history-fill" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color={geometry.color} stop-opacity=".25" />
+          <stop offset="100%" stop-color="var(--color-surface)" stop-opacity="0" />
+        </linearGradient>
+        <linearGradient id="fpt-forecast-fill" x1="0" y1="1" x2="0" y2="0" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color={summary.forecast?.direction === 'up' ? '#16834a' : '#d33c43'} stop-opacity=".25" />
+          <stop offset="100%" stop-color="var(--color-surface)" stop-opacity="0" />
+        </linearGradient>
+        <marker id="fpt-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10" fill="context-stroke" />
+        </marker>
+      </defs>
+      <g data-fpt-grid fill="var(--color-ink-subtle)" font-size="11">
+        <text x="0" y="16">VNĐ</text>
+        {geometry.prices.map((tick) => <g>
+          <line x1={geometry.left} x2={geometry.right} y1={tick.y} y2={tick.y} stroke="var(--color-surface-container-high)" />
+          <text x={geometry.left - 9} y={tick.y + 4} text-anchor="end">{number.format(tick.value)}</text>
+        </g>)}
+        {geometry.dates.map((tick, index) => <text x={tick.x} y="292" text-anchor={index === 0 ? 'start' : index === geometry.dates.length - 1 ? 'end' : 'middle'}>{shortDate(tick.date)}</text>)}
+      </g>
+      <path data-fpt-area d={geometry.area} fill="url(#fpt-history-fill)" />
+      <path data-fpt-line d={geometry.line} fill="none" stroke={geometry.color} stroke-width="2" stroke-linejoin="round" />
+      <circle data-fpt-endpoint cx={geometry.coordinates[59].x} cy={geometry.coordinates[59].y} r="3.5" fill={geometry.color} />
+      <line data-fpt-divider x1={geometry.right} x2={geometry.right} y1="26" y2={geometry.bottom} stroke="var(--color-outline-variant)" stroke-dasharray="3 5" />
+      <g data-fpt-tail style="display: none;">
+        <path data-fpt-tail-area fill="url(#fpt-forecast-fill)" />
+        <path data-fpt-tail-line fill="none" stroke={summary.forecast?.direction === 'up' ? '#16834a' : '#d33c43'} stroke-width="2" stroke-dasharray="5 4" marker-end="url(#fpt-arrow)" />
+        <text data-fpt-tail-title y="14" text-anchor="middle" font-size="11" fill="var(--color-ink-muted)">Dự báo</text>
+        <text data-fpt-tail-date y="29" text-anchor="middle" font-size="11" fill="var(--color-ink-subtle)">{summary.forecast ? shortDate(summary.forecast.target_session) : ''}</text>
+        <text data-fpt-tail-note y="292" text-anchor="middle" font-size="11" fill="var(--color-ink-subtle)">Chỉ hướng</text>
+      </g>
+      <g data-fpt-crosshair style="display: none;" pointer-events="none">
+        <line y1="30" y2={geometry.bottom} stroke="var(--color-outline)" stroke-dasharray="3 4" />
+        <circle r="4" fill={geometry.color} stroke="var(--color-surface)" stroke-width="2" />
+      </g>
+    </svg>
+    <output data-fpt-tooltip hidden class="pointer-events-none absolute top-9 z-10 w-max max-w-full rounded-button border border-border bg-white px-3 py-2 text-body-sm text-ink shadow-soft" aria-live="polite"></output>
+  </div>
+  <div data-fpt-controls hidden class="mt-1 flex flex-wrap items-center justify-between gap-2 text-body-sm text-ink-subtle">
+    <p data-fpt-range>60 phiên gần nhất</p>
+    <div class="flex gap-1" role="group" aria-label="Phạm vi biểu đồ">
+      <button type="button" data-fpt-zoom-out aria-label="Thu nhỏ biểu đồ" class="rounded-button border border-border px-3 py-1 disabled:opacity-40">−</button>
+      <button type="button" data-fpt-zoom-in aria-label="Phóng to biểu đồ" class="rounded-button border border-border px-3 py-1 disabled:opacity-40">+</button>
+      <button type="button" data-fpt-reset class="rounded-button border border-border px-3 py-1">Đặt lại</button>
+    </div>
+  </div>
+  <p id="fpt-line-help" class="mt-2 text-body-sm text-ink-subtle">Rê chuột/chạm xem giá · Kéo ngang sau khi phóng to.<span class="sr-only"> Dùng nút +/− hoặc Ctrl và cuộn để thu phóng. Bàn phím: ←/→ xem từng phiên, Home đặt lại.</span></p>
+  <noscript><p class="mt-2 text-body-sm text-ink-muted">Bật JavaScript để xem giá từng phiên và điều khiển biểu đồ.</p></noscript>
+</div>
+
+<style>
+  [data-fpt-controls][hidden] { display: none; }
+</style>

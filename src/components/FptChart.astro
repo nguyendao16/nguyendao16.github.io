@@ -1,5 +1,6 @@
 ---
 import Section from './Section.astro';
+import FptLineChart from './FptLineChart.astro';
 import { parseChartSummary } from '../utils/fpt-chart.mjs';
 import result from '../../public/fpt/summary.json';
 
@@ -11,7 +12,6 @@ const updated = new Intl.DateTimeFormat('vi-VN', {
   timeZone: 'Asia/Ho_Chi_Minh', dateStyle: 'short', timeStyle: 'short',
 }).format(new Date(summary.updated_at));
 const tone = summary.change > 0 ? 'text-emerald-700' : summary.change < 0 ? 'text-red-700' : 'text-ink-muted';
-const asset = (name: string) => `${import.meta.env.BASE_URL}fpt/${name}.png?v=${Date.parse(summary.updated_at)}`;
 const forecast = summary.forecast;
 ---
 
@@ -19,8 +19,7 @@ const forecast = summary.forecast;
   <figure
     class="mt-6"
     data-fpt-chart
-    data-issued-at={forecast?.issued_at}
-    data-expires-at={forecast?.expires_at}
+    data-summary={JSON.stringify(summary)}
   >
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -48,27 +47,7 @@ const forecast = summary.forecast;
           </div>
         </div>
         <div class="mt-4 grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_7rem]">
-        <picture class="block min-w-0">
-          <source
-            media="(max-width: 639px)"
-            srcset={asset('history-mobile')}
-            data-history={asset('history-mobile')}
-            data-forecast={asset('forecast-mobile')}
-            width="1080"
-            height="756"
-          />
-          <img
-            src={asset('history')}
-            data-history={asset('history')}
-            data-forecast={asset('forecast')}
-            alt={`Đường giá đóng cửa FPT trong 60 phiên, đến ${date(summary.source_session)}. Giá cuối ${number.format(summary.last_close)} VNĐ.`}
-            width="2160"
-            height="756"
-            class="h-auto w-full"
-            loading="lazy"
-            decoding="async"
-          />
-        </picture>
+        <FptLineChart summary={summary} />
         <aside class="w-28 justify-self-end text-body-sm" aria-label="Kết quả dự đoán" data-fpt-performance>
           <dl class="space-y-1">
             <div class="flex items-center justify-between gap-4">
@@ -95,25 +74,9 @@ const forecast = summary.forecast;
 </Section>
 
 <script>
-  import { isForecastCurrent } from '../utils/fpt-chart.mjs';
+  import { initFptChart } from '../utils/fpt-chart-client';
 
   document.querySelectorAll<HTMLElement>('[data-fpt-chart]').forEach((chart) => {
-    const timing = { issued_at: chart.dataset.issuedAt ?? '', expires_at: chart.dataset.expiresAt ?? '' };
-    let timer: ReturnType<typeof setTimeout>;
-    const update = () => {
-      clearTimeout(timer);
-      const current = isForecastCurrent(timing);
-      const image = chart.querySelector('img');
-      const source = chart.querySelector('source');
-      if (image) image.src = (current ? image.dataset.forecast : image.dataset.history) ?? image.src;
-      if (source) source.srcset = (current ? source.dataset.forecast : source.dataset.history) ?? source.srcset;
-      const pending = chart.querySelector<HTMLElement>('[data-fpt-pending]');
-      if (pending) pending.hidden = current;
-      chart.querySelectorAll<HTMLElement>('[data-fpt-forecast], [data-fpt-note]').forEach((element) => { element.hidden = !current; });
-      if (current) timer = setTimeout(update, Math.min(Date.parse(timing.expires_at) - Date.now(), 2_147_483_647));
-    };
-    update();
-    window.addEventListener('pageshow', update);
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });
+    initFptChart(chart);
   });
 </script>

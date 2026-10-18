@@ -104,15 +104,13 @@ The GitHub Actions workflow:
 
 The chart appears above “Bài viết mới nhất”. It shows 60 sessions of actual closing prices; the latest close compared with that session's official reference sets the whole history region's color. The dashed tail shows only the model's direction, without inventing a target price or return. “Không tăng” includes both a decline and an unchanged price.
 
-The private `nguyendao16/stock-predict` workflow renders desktop/mobile PNGs and publishes only these files to `public/fpt/`:
+The private `nguyendao16/stock-predict` workflow publishes one file, `public/fpt/summary.json`: exactly 60 ordered `{date, close}` points, the latest price/change, source/update dates, forecast direction/issue/expiry dates, and aggregate prediction counts. The exporter uses a field allowlist; no older prices, OHLCV, per-session reference prices, model files, features, internal probabilities, forecast ledger or credentials are published. The website validates this contract during the build and in the browser.
 
-- `history.png`, `history-mobile.png`: history without a forecast.
-- `forecast.png`, `forecast-mobile.png`: history with the direction marker.
-- `summary.json`: the latest price/change, source/update dates, forecast direction/issue/expiry dates, and aggregate prediction counts. No price series, model files, or credentials.
+The website draws an SVG line with no charting dependency. Hover or touch shows the session date and actual close; buttons and Ctrl+wheel zoom, and horizontal dragging pans inside the 60 published sessions. Arrow keys inspect points, +/− zoom and Home resets. No older history is fetched. The static line remains available without JavaScript; interaction and the forecast marker require JavaScript.
 
-The browser removes the forecast marker at the target session's close, including when returning to an old tab. New releases appear on a page load after the normal Pages deployment. A failed refresh leaves the previous published files intact. PNGs do not expose a downloadable source dataset or per-point tooltips, although visitors can still read or approximate prices from the image.
+The browser removes the forecast marker at the target session's close, including when returning to an old tab. The marker appears only when the latest session is in view, in a separate panel without a price scale. New releases appear on a page load after the normal Pages deployment. A failed refresh leaves the previous published result intact. Visitors can download the 60 public points and accumulate snapshots over time; this is a display window, not a restriction on saving public data.
 
-Automatic publication uses a dedicated SSH write deploy key for this repository. Its private half is stored only as `FPT_SITE_DEPLOY_KEY` in the **private stock-predict repository's Actions secrets**; the website needs no private-repository access. Do not store a personal GitHub token in the workflow. After a successful weekly CD, and at 16:30/18:30 Vietnam time on weekdays, the private workflow refreshes prices, runs inference, and commits the five public outputs. The existing Pages workflow handles that commit.
+Automatic publication uses a dedicated SSH write deploy key for this repository. Its private half is stored only as `FPT_SITE_DEPLOY_KEY` in the **private stock-predict repository's Actions secrets**; the website needs no private-repository access. Do not store a personal GitHub token in the workflow. After a successful weekly CD, and at 16:30/18:30 Vietnam time on weekdays, the private workflow refreshes prices, runs inference, and commits the public result window. The existing Pages workflow handles that commit.
 
 Validate chart parsing and expiry with `node --test tests/fpt-chart.test.mjs`; run `npm run build` for Astro type checking and the static build.
 
