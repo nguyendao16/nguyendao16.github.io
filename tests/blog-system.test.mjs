@@ -48,17 +48,22 @@ describe('Technical blog system', () => {
     assert.match(layout, /SEO|meta/i);
   });
 
-  it('contains the requested sample MDX post', () => {
-    const sample = read('src/content/blog/knn-cosine-vs-euclidean.mdx');
+  it('compiles the RNN article and renders its introductory derivatives as math', async () => {
+    const { compile } = await import('@mdx-js/mdx');
+    const { default: remarkMath } = await import('remark-math');
+    const { default: rehypeKatex } = await import('rehype-katex');
+    const article = read('src/content/blog/vanishing-exploding-gradients-rnn-proof.mdx');
+    const body = article.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+    const options = {
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [rehypeKatex],
+    };
 
-    assert.match(sample, /title:/);
-    assert.match(sample, /description:/);
-    assert.match(sample, /date:/);
-    assert.match(sample, /tags:/);
-    assert.match(sample, /coverImage:/);
-    assert.match(sample, /```python/i);
-    assert.match(sample, /\$\$/);
-    assert.match(sample, /<iframe/i);
-    assert.match(sample, /!\[/);
+    const compiled = await compile(body, options);
+    assert.deepEqual(compiled.messages, []);
+    const introduction = await compile(body.split('## 2.')[0], options);
+    assert.match(introduction.value, /katex-display/);
+    assert.match(introduction.value, /children: "∂"/);
+    assert.match(introduction.value, /children: "3"/);
   });
 });

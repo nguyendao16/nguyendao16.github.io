@@ -1,0 +1,611 @@
+---
+title: "The most sufficient mathematical explanations about Vanishing Gradient and Exploding Gradient in RNNs"
+description: "Derive BPTT using partial and total derivatives, then prove when gradients vanish or explode."
+date: 2026-10-18
+tags:
+  - Deep Learning
+  - RNN
+  - Backpropagation
+  - Mathematics
+draft: false
+seoTitle: "Vanishing and Exploding Gradients in RNNs: Mathematical Derivation"
+seoDescription: "A step-by-step mathematical explanation of total derivatives, BPTT, Jacobian products, vanishing gradients, exploding gradients."
+---
+
+Before reading this article, you should be familiar with:
+
+- RNN architecture.
+- How to compute an RNN's hidden states and outputs.
+- Backpropagation.
+- The tanh activation used in hidden-state updates.
+
+Many explanations of vanishing and exploding gradients in RNNs invoke the chain rule without clearly distinguishing two important concepts from multivariable calculus: the **total derivative** ($d$) and the **partial derivative** ($\partial$).
+
+- The **partial derivative** measures how a function changes with respect to one variable while holding its other arguments constant.
+- The **total derivative** measures how a function changes with respect to a variable, accounting for all direct and indirect dependencies.
+
+## 1. Total and partial derivatives
+
+To understand the distinction, consider
+
+$$
+y=x^2+z,
+\qquad z=3x.
+$$
+
+Notice that $y$ depends on $x$ in two ways:
+
+- Directly through the term $x^2$.
+- Indirectly through $z$, because $z$ also depends on $x$.
+
+### Partial derivative
+
+If we calculate the partial derivative of $y$ with respect to $x$, we treat $z$ as a constant:
+
+$$
+\boxed{\frac{\partial y}{\partial x}=2x}
+$$
+
+This only captures the direct effect of $x$ on $y$.
+
+### Total derivative
+
+However, changing $x$ also changes $z$, which subsequently changes $y$. Therefore, we must account for both paths. By applying the chain rule:
+
+$$
+\boxed{
+\frac{dy}{dx}
+=\frac{\partial y}{\partial x}
++\frac{\partial y}{\partial z}\frac{dz}{dx}
+}
+$$
+
+We already know:
+
+$$
+\frac{\partial y}{\partial x}=2x,
+\qquad
+\frac{\partial y}{\partial z}=1,
+\qquad
+\frac{dz}{dx}=3.
+$$
+
+Substituting:
+
+$$
+\frac{dy}{dx}=2x+1\cdot3.
+$$
+
+Therefore:
+
+$$
+\boxed{\frac{dy}{dx}=2x+3}
+$$
+
+This demonstrates the fundamental difference: the partial derivative only considers the direct dependency, while the total derivative accounts for every path through which the independent variable influences the output. This is exactly the principle used in Backpropagation Through Time (BPTT).
+
+## 2. An RNN unrolled over three time steps
+
+Consider the recurrence
+
+$$
+\begin{aligned}
+h_1 &= f_\theta(h_0,x_1),\\
+h_2 &= f_\theta(h_1,x_2),\\
+h_3 &= f_\theta(h_2,x_3).
+\end{aligned}
+$$
+
+Here:
+
+| Symbol | Meaning |
+| --- | --- |
+| $x_t$ | Input at time step $t$ |
+| $h_t$ | Hidden state at time step $t$ |
+| $h_0$ | Initial hidden state |
+| $\theta$ | Parameters shared across all time steps |
+| $f_\theta$ | The hidden-state update function |
+
+**Important:** $f_\theta$ is the **same function with the same parameters** at every time step. The values of its inputs change with time; the function itself is not replaced by different learned functions $f_1,f_2,f_3$.
+
+We assume that the initial state $h_0$ and the inputs $x_1,x_2,x_3$ do not depend on $\theta$. We also assume the update function is differentiable.
+
+### 2.1. How can $\theta$ influence $h_3$?
+
+There are three routes by which the shared parameters contribute to $h_3$:
+
+```text
+Path A: theta -> [f_theta at step 3] -> h3
+
+Path B: theta -> [f_theta at step 2] -> h2
+                                            -> [f_theta at step 3] -> h3
+
+Path C: theta -> [f_theta at step 1] -> h1
+                                            -> [f_theta at step 2] -> h2
+                                            -> [f_theta at step 3] -> h3
+```
+
+The phrase *direct effect at step 3* means differentiating the **third invocation of $f_\theta$** with respect to $\theta$ while holding its input $h_2$ fixed. It does **not** mean that the parameters bypass $f_\theta$.
+
+## 3. Expanding the chain rule from $h_3$ backward
+
+Our goal is the **total derivative**
+
+$$
+\frac{dh_3}{d\theta}.
+$$
+
+We will expand this into local partial derivatives without skipping any step.
+
+### Step 1: Expand the dependence of $h_3$
+
+Because $h_3=f_\theta(h_2,x_3)$, changing $\theta$ influences $h_3$ (i) through the local update at step 3 and (ii) through $h_2$:
+
+$$
+\boxed{
+\frac{dh_3}{d\theta}
+=
+\underbrace{\frac{\partial h_3}{\partial\theta}}_{\text{Local step-3 effect}}
++
+\underbrace{\frac{\partial h_3}{\partial h_2}\frac{dh_2}{d\theta}}_{\text{Effect via }h_2}
+}
+\tag{1}
+$$
+
+In $\partial h_3/\partial\theta$, $h_2$ is held fixed. In $\partial h_3/\partial h_2$, $\theta$ is held fixed. The term $dh_2/d\theta$ remains a total derivative because $h_2$ itself has several dependencies.
+
+### Step 2: Expand the dependence of $h_2$
+
+Since $h_2=f_\theta(h_1,x_2)$, apply the same rule:
+
+$$
+\boxed{
+\frac{dh_2}{d\theta}
+=
+\frac{\partial h_2}{\partial\theta}
++
+\frac{\partial h_2}{\partial h_1}\frac{dh_1}{d\theta}
+}
+\tag{2}
+$$
+
+Substitute Equation (2) into Equation (1):
+
+$$
+\begin{aligned}
+\frac{dh_3}{d\theta}
+={}&\frac{\partial h_3}{\partial\theta}\\
+&+\frac{\partial h_3}{\partial h_2}
+\left(
+\frac{\partial h_2}{\partial\theta}
++\frac{\partial h_2}{\partial h_1}\frac{dh_1}{d\theta}
+\right).
+\end{aligned}
+$$
+
+Distribute the product:
+
+$$
+\boxed{
+\begin{aligned}
+\frac{dh_3}{d\theta}
+={}&\frac{\partial h_3}{\partial\theta}\\
+&+\frac{\partial h_3}{\partial h_2}\frac{\partial h_2}{\partial\theta}\\
+&+\frac{\partial h_3}{\partial h_2}
+\frac{\partial h_2}{\partial h_1}\frac{dh_1}{d\theta}.
+\end{aligned}
+}
+\tag{3}
+$$
+
+Only one total derivative is left: $dh_1/d\theta$.
+
+### Step 3: Expand the dependence of $h_1$
+
+Since $h_1=f_\theta(h_0,x_1)$ and $h_0,x_1$ are independent of $\theta$:
+
+$$
+\boxed{
+\frac{dh_1}{d\theta}=
+\frac{\partial h_1}{\partial\theta}
+}
+\tag{4}
+$$
+
+Substitute Equation (4) into Equation (3):
+
+$$
+\boxed{
+\begin{aligned}
+\frac{dh_3}{d\theta}
+={}&\underbrace{\frac{\partial h_3}{\partial\theta}}_{\text{Step 3}}\\[6pt]
+&+\underbrace{\frac{\partial h_3}{\partial h_2}
+\frac{\partial h_2}{\partial\theta}}_{\text{Step 2}}\\[6pt]
+&+\underbrace{\frac{\partial h_3}{\partial h_2}
+\frac{\partial h_2}{\partial h_1}
+\frac{\partial h_1}{\partial\theta}}_{\text{Step 1}}.
+\end{aligned}
+}
+\tag{5}
+$$
+
+**We have now expressed the total derivative entirely as a sum of products of partial derivatives.** Each term corresponds to a different point in time at which $\theta$ enters the computation.
+
+### Step 4: Write every term using $f_\theta$
+
+For the local parameter derivatives:
+
+$$
+\begin{aligned}
+\frac{\partial h_3}{\partial\theta}
+&=\left.\frac{\partial f_\theta(h,x)}{\partial\theta}\right|_{h=h_2,\,x=x_3},\\
+\frac{\partial h_2}{\partial\theta}
+&=\left.\frac{\partial f_\theta(h,x)}{\partial\theta}\right|_{h=h_1,\,x=x_2},\\
+\frac{\partial h_1}{\partial\theta}
+&=\left.\frac{\partial f_\theta(h,x)}{\partial\theta}\right|_{h=h_0,\,x=x_1}.
+\end{aligned}
+$$
+
+And for the state derivatives:
+
+$$
+\begin{aligned}
+\frac{\partial h_3}{\partial h_2}
+&=\left.\frac{\partial f_\theta(h,x)}{\partial h}\right|_{h=h_2,\,x=x_3},\\
+\frac{\partial h_2}{\partial h_1}
+&=\left.\frac{\partial f_\theta(h,x)}{\partial h}\right|_{h=h_1,\,x=x_2}.
+\end{aligned}
+$$
+
+So the three contributions in Equation (5) come from **the same update function evaluated at different input values**.
+
+## 4. A compact notation: Jacobians
+
+Introduce two local derivatives:
+
+$$
+\boxed{
+J_t=\frac{\partial h_t}{\partial h_{t-1}}
+}
+\qquad
+\boxed{
+B_t=\left.\frac{\partial f_\theta(h,x)}{\partial\theta}\right|_{h=h_{t-1},\,x=x_t}
+}
+$$
+
+- $J_t$ measures how the current hidden state responds to changes in the previous hidden state.
+- $B_t$ measures how the current update responds to changes in the shared parameters **with the previous hidden state held fixed**.
+
+For a hidden state of dimension $n$ and a parameter vector of dimension $p$:
+
+$$
+J_t\in\mathbb{R}^{n\times n},
+\qquad
+B_t\in\mathbb{R}^{n\times p}.
+$$
+
+Equation (5) becomes:
+
+$$
+\boxed{
+\frac{dh_3}{d\theta}=B_3+J_3B_2+J_3J_2B_1
+}
+\tag{6}
+$$
+
+In general, for $T$ time steps:
+
+$$
+\boxed{
+\frac{dh_T}{d\theta}
+=
+\sum_{k=1}^{T}
+\left(J_TJ_{T-1}\cdots J_{k+1}\right)B_k
+}
+\tag{7}
+$$
+
+For $k=T$, the product of Jacobians is the identity matrix. Matrix multiplication must retain the order shown here.
+
+**Key observation:** The earlier the contribution (the smaller $k$), the more Jacobians are multiplied together before that contribution reaches $h_T$.
+
+## 5. From hidden-state derivatives to the loss gradient
+
+Suppose the loss is computed only at the final time step:
+
+$$
+L=L_T(h_T).
+$$
+
+Applying the chain rule once more gives:
+
+$$
+\frac{dL_T}{d\theta}
+=
+\frac{\partial L_T}{\partial h_T}
+\frac{dh_T}{d\theta}.
+$$
+
+Using Equation (7):
+
+$$
+\boxed{
+\frac{dL_T}{d\theta}
+=
+\frac{\partial L_T}{\partial h_T}
+\sum_{k=1}^{T}
+\left(J_TJ_{T-1}\cdots J_{k+1}\right)B_k
+}
+\tag{8}
+$$
+
+We use a **row-gradient convention** here, so the dimensions of the matrix products match. With column gradients, the equivalent backward recursion uses transposed Jacobians.
+
+Consider the contribution entering through the first update, $k=1$:
+
+$$
+\boxed{
+G_1=
+\frac{\partial L_T}{\partial h_T}
+J_TJ_{T-1}\cdots J_2B_1
+}
+\tag{9}
+$$
+
+For a sequence of length $T=100$, this contribution contains **99 Jacobian factors**. Whether their product contracts or amplifies is the heart of the gradient problem.
+
+## 6. Vanishing gradients: a scalar proof
+
+First consider a scalar recurrence, so each $J_t$ is a real number. Assume that
+
+$$
+J_t=0.5
+\quad\text{for every time step}.
+$$
+
+The sensitivity of the last hidden state to the first hidden state is
+
+$$
+\frac{dh_{100}}{dh_1}
+=J_{100}J_{99}\cdots J_2.
+$$
+
+There are 99 factors:
+
+$$
+\boxed{
+\frac{dh_{100}}{dh_1}=0.5^{99}
+\approx1.58\times10^{-30}
+}
+$$
+
+The gradient of the final loss with respect to $h_1$ is
+
+$$
+\frac{\partial L_{100}}{\partial h_1}
+=
+\frac{\partial L_{100}}{\partial h_{100}}
+\frac{dh_{100}}{dh_1}.
+$$
+
+Thus,
+
+$$
+\boxed{
+\frac{\partial L_{100}}{\partial h_1}
+=
+\frac{\partial L_{100}}{\partial h_{100}}
+\left(1.58\times10^{-30}\right)
+}
+$$
+
+Unless the gradient at the final step is exceptionally large, the signal reaching $h_1$ is almost zero.
+
+**This is vanishing gradient:** a gradient contribution shrinks exponentially as it travels through many time steps.
+
+## 7. Exploding gradients: a scalar proof
+
+Now consider a different scalar recurrence where
+
+$$
+J_t=1.2
+\quad\text{for every time step}.
+$$
+
+Then
+
+$$
+\boxed{
+\frac{dh_{100}}{dh_1}
+=1.2^{99}
+\approx6.90\times10^7
+}
+$$
+
+The signal is amplified by roughly **69 million times** over the same distance. A simple linear recurrence $h_t=1.2h_{t-1}$ has exactly this Jacobian at each step.
+
+**This is exploding gradient:** a gradient contribution can grow exponentially when the repeated transformations amplify it.
+
+Compare the three illustrative repeated factors:
+
+<div className="overflow-x-auto">
+
+| Multiplier per transition | After 99 transitions | Interpretation |
+| --- | ---: | --- |
+| $0.5$ | $1.58\times10^{-30}$ | Strong contraction |
+| $1.0$ | $1$ | Magnitude preserved |
+| $1.2$ | $6.90\times10^7$ | Strong amplification |
+
+</div>
+
+These examples demonstrate what **can** happen; actual RNN Jacobians depend on learned weights, activations, and inputs and generally vary with time.
+
+## 8. Where do RNN Jacobians come from?
+
+Consider a simple scalar RNN with a hyperbolic tangent activation:
+
+$$
+h_t=\tanh(wh_{t-1}+ux_t+b).
+$$
+
+Define
+
+$$
+z_t=wh_{t-1}+ux_t+b.
+$$
+
+Then $h_t=\tanh(z_t)$. The local Jacobian follows from the chain rule:
+
+$$
+\begin{aligned}
+J_t
+&=\frac{\partial h_t}{\partial h_{t-1}}\\
+&=\frac{\partial h_t}{\partial z_t}
+\frac{\partial z_t}{\partial h_{t-1}}\\
+&=\left(1-\tanh^2(z_t)\right)w\\
+&=w(1-h_t^2).
+\end{aligned}
+$$
+
+Therefore:
+
+$$
+\boxed{J_t=w(1-h_t^2)}
+\tag{10}
+$$
+
+Because a tanh output lies between $-1$ and $1$:
+
+$$
+0\le 1-h_t^2\le1
+\quad\Longrightarrow\quad
+|J_t|\le|w|.
+$$
+
+Two consequences follow:
+
+1. **If $|w|<1$**, every local Jacobian has magnitude below 1, so long products are guaranteed to contract exponentially.
+2. **If $|w|>1$**, some Jacobians may exceed 1, but explosion is **not guaranteed**. The tanh derivative may be tiny when the activation is saturated.
+
+For example, if $w=2$ and $h_t=0.99$:
+
+$$
+J_t=2(1-0.99^2)=0.0398.
+$$
+
+Despite $w$ being greater than 1, this particular Jacobian strongly contracts the gradient.
+
+## 9. The multidimensional proof using matrix norms
+
+For a vector-valued RNN:
+
+$$
+h_t=\tanh(W_hh_{t-1}+W_xx_t+b),
+$$
+
+where tanh and the square in $1-h_t^2$ are applied elementwise, the local Jacobian is
+
+$$
+\boxed{
+J_t=D_tW_h,
+\qquad
+D_t=\operatorname{diag}(1-h_t^2)
+}
+$$
+
+The sensitivity between steps $k$ and $T$ is a matrix product:
+
+$$
+\frac{\partial h_T}{\partial h_k}
+=J_TJ_{T-1}\cdots J_{k+1}.
+$$
+
+Using the submultiplicative property of the operator norm,
+
+$$
+\lVert AB\rVert_2\le\lVert A\rVert_2\lVert B\rVert_2,
+$$
+
+we obtain
+
+$$
+\left\lVert\frac{\partial h_T}{\partial h_k}\right\rVert_2
+\le
+\prod_{j=k+1}^{T}\lVert J_j\rVert_2.
+$$
+
+Now suppose there is a fixed number $\rho$ satisfying
+
+$$
+0<\rho<1,
+\qquad
+\lVert J_j\rVert_2\le\rho
+\quad\text{for every }j.
+$$
+
+Then
+
+$$
+\boxed{
+\left\lVert\frac{\partial h_T}{\partial h_k}\right\rVert_2
+\le\rho^{T-k}
+}
+\tag{11}
+$$
+
+Since
+
+$$
+\lim_{T-k\to\infty}\rho^{T-k}=0,
+$$
+
+**we have proved a sufficient condition for exponentially vanishing gradients along the recurrent path.** In particular, the norm of the contribution in Equation (9) is bounded by the final loss-gradient norm, the local parameter Jacobian norm, and the exponentially decreasing factor.
+
+For exploding gradients, the product must amplify the gradient along relevant directions. Individual Jacobian norms greater than 1 are **not** enough to prove explosion: different matrices can amplify different directions and cancel one another's effects.
+
+For example:
+
+$$
+A=\begin{pmatrix}2&0\\0&0.1\end{pmatrix},
+\qquad
+B=\begin{pmatrix}0.1&0\\0&2\end{pmatrix}.
+$$
+
+Both matrices have operator norm $2$, but
+
+$$
+AB=\begin{pmatrix}0.2&0\\0&0.2\end{pmatrix}
+\qquad\Longrightarrow\qquad
+\lVert AB\rVert_2=0.2.
+$$
+
+So a sequence of individually expansive Jacobians can still produce a contracting product.
+
+## 10. Does vanishing gradient mean every parameter gradient is zero?
+
+**No.** Return to the three-step formula:
+
+$$
+\frac{dh_3}{d\theta}=B_3+J_3B_2+J_3J_2B_1.
+$$
+
+Even if $J_3J_2B_1$ is negligible because the gradient from step 1 vanishes, the local term $B_3$ can remain large.
+
+The real difficulty is that **learning signals from the distant past become weak**, so the network struggles to learn relationships requiring information across long time spans. Short-term learning may still work well.
+
+If a loss is produced at every time step instead of only at the final step, the backward gradient also accumulates contributions from later losses. With column-vector gradients, this can be expressed as
+
+$$
+\boxed{
+\delta_t=g_t+J_{t+1}^{\mathsf T}\delta_{t+1},
+\qquad
+g_t=\nabla_{h_t}L_t
+}
+$$
+
+where $\delta_t$ is the total gradient of the sequence loss with respect to $h_t$. The same Jacobian-product issue still arises for contributions transmitted over long distances.
+
+### Further reading
+
+- [Nicolas Zucchet, Antonio Orvieto — Recurrent neural networks: vanishing and exploding gradients are not the end of the story (2024)](https://arxiv.org/html/2405.21064v1)
+- [Mathematics Stack Exchange — What exactly is the difference between a derivative and a total derivative? (2014)](https://math.stackexchange.com/questions/174270/what-exactly-is-the-difference-between-a-derivative-and-a-total-derivative)
