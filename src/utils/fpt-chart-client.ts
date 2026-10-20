@@ -1,4 +1,4 @@
-import { chartGeometry, chartWindow, isForecastCurrent, parseChartSummary } from './fpt-chart.mjs';
+import { chartGeometry, chartWindow, isForecastCurrent, outcomeColor, outcomeLabel, parseChartSummary } from './fpt-chart.mjs';
 
 export function initFptChart(chart: HTMLElement) {
   const summary = parseChartSummary(JSON.parse(chart.dataset.summary ?? 'null'));
@@ -28,19 +28,23 @@ export function initFptChart(chart: HTMLElement) {
   const showTooltip = (index: number | null) => {
     let x: number;
     if (index === null) {
-      if (!current || range.end !== 60 || !summary.forecast) return hideTooltip();
-      tooltip.textContent = `${date(summary.forecast.target_session)} · ${summary.forecast.direction === 'up' ? 'Forecast: Up' : 'Forecast: No increase'} · Direction only`;
+      const pending = geometry.markers.find((marker) => marker.rail);
+      if (pending) tooltip.textContent = `${date(pending.date)} · ${outcomeLabel(pending.status)}`;
+      else if (current && range.end === 60 && summary.forecast) {
+        tooltip.textContent = `${date(summary.forecast.target_session)} · ${summary.forecast.direction === 'up' ? 'Forecast: Up' : 'Forecast: No increase'} · Direction only`;
+      } else return hideTooltip();
       x = geometry.right;
       crosshair.style.display = 'none';
     } else {
       selected = range.start + index;
       const point = geometry.points[index];
       const coordinate = geometry.coordinates[index];
-      tooltip.textContent = `${date(point.date)} · ${number.format(point.close)} VND`;
+      const marker = geometry.markers.find((item) => item.date === point.date);
+      tooltip.textContent = `${date(point.date)} · ${number.format(point.close)} VND${marker ? ` · ${outcomeLabel(marker.status)}` : ''}`;
       x = coordinate.x;
       crosshair.style.display = '';
       attrs('[data-fpt-crosshair] line', { x1: x, x2: x });
-      attrs('[data-fpt-crosshair] circle', { cx: x, cy: coordinate.y });
+      attrs('[data-fpt-crosshair] circle', { cx: x, cy: coordinate.y, fill: marker ? outcomeColor(marker.status) : geometry.color });
     }
     tooltip.hidden = false;
     tooltip.style.left = `${Math.max(0, Math.min(geometry.width - tooltip.offsetWidth, x - tooltip.offsetWidth / 2))}px`;
@@ -49,18 +53,14 @@ export function initFptChart(chart: HTMLElement) {
     hideTooltip();
     selected = Math.max(range.start, Math.min(range.end - 1, selected));
     const width = Math.max(300, svg.getBoundingClientRect().width);
-    geometry = chartGeometry(summary, width, range);
-    const { left, right, top, bottom } = geometry;
+    geometry = chartGeometry(summary, width, range, current);
+    const { left, right, bottom, endX, endY } = geometry;
     svg.setAttribute('viewBox', `0 0 ${width} ${geometry.height}`);
     attrs('[data-fpt-line]', { d: geometry.line });
     attrs('[data-fpt-area]', { d: geometry.area });
     const last = geometry.coordinates.at(-1)!;
     attrs('[data-fpt-endpoint]', { cx: last.x, cy: last.y });
     attrs('[data-fpt-divider]', { x1: right, x2: right });
-    // The forecast has a separate panel without a price scale; its slope denotes direction only.
-    const endX = width - 16;
-    const endY = Math.max(top + 28, Math.min(bottom - 20,
-      last.y + (summary.forecast?.direction === 'up' ? -40 : 40)));
     attrs('[data-fpt-tail-line]', { d: `M${right},${last.y} L${endX},${endY}` });
     attrs('[data-fpt-tail-area]', { d: `M${right},${last.y} L${endX},${endY} L${endX},${bottom} L${right},${bottom} Z` });
     for (const selector of ['[data-fpt-tail-title]', '[data-fpt-tail-date]', '[data-fpt-tail-note]']) {
@@ -69,11 +69,12 @@ export function initFptChart(chart: HTMLElement) {
     tail.style.display = current && range.end === 60 ? '' : 'none';
     const grid = chart.querySelector('[data-fpt-grid]')!;
     grid.replaceChildren();
-    const node = (name: string, attributes: Record<string, string | number>, text?: string) => {
+    const node = (name: string, attributes: Record<string, string | number>, text?: string, parent: Element = grid) => {
       const element = document.createElementNS('http://www.w3.org/2000/svg', name);
       for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, String(value));
       if (text) element.textContent = text;
-      grid.append(element);
+      parent.append(element);
+      return element;
     };
     node('text', { x: 0, y: 16 }, 'VND');
     geometry.prices.forEach((tick) => {
@@ -83,6 +84,20 @@ export function initFptChart(chart: HTMLElement) {
     geometry.dates.forEach((tick, index) => node('text', {
       x: tick.x, y: 292, 'text-anchor': index === 0 ? 'start' : index === geometry.dates.length - 1 ? 'end' : 'middle',
     }, date(tick.date).slice(0, 5)));
+    const markers = chart.querySelector('[data-fpt-markers]')!;
+    markers.replaceChildren();
+    geometry.markers.forEach((marker) => {
+      const group = node('g', { 'data-fpt-result': marker.status, 'data-date': marker.date,
+        ...(marker.rail ? { 'data-rail': '' } : {}) }, undefined, markers);
+      node('circle', { cx: marker.x, cy: marker.y, r: 5, fill: outcomeColor(marker.status),
+        stroke: 'var(--color-surface)', 'stroke-width': 2 }, undefined, group);
+      node('title', {}, `${date(marker.date)} · ${outcomeLabel(marker.status)}`, group);
+      if (marker.rail && !(current && summary.forecast?.target_session === marker.date)) {
+        const label = { x: (right + endX) / 2, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--color-ink-muted)' };
+        node('text', { ...label, y: 14 }, 'Pending', group);
+        node('text', { ...label, y: 29 }, date(marker.date).slice(0, 5), group);
+      }
+    });
   };
   const zoom = (factor: number, anchor = range.end === 60 ? 1 : .5) => {
     const count = range.end - range.start;
@@ -137,7 +152,9 @@ export function initFptChart(chart: HTMLElement) {
     if (['+', '=', '-'].includes(event.key)) return zoom(event.key === '-' ? 1.5 : 2 / 3);
     if (event.key === 'Home') { range = chartWindow(0, 60); selected = 59; render(); }
     else {
-      selected = Math.max(0, Math.min(59, selected + (event.key === 'ArrowLeft' ? -1 : 1)));
+      const maximum = geometry.markers.some((marker) => marker.rail) ? 60 : 59;
+      selected = Math.max(0, Math.min(maximum, selected + (event.key === 'ArrowLeft' ? -1 : 1)));
+      if (selected === 60) return showTooltip(null);
       if (selected < range.start || selected >= range.end) {
         range = chartWindow(selected < range.start ? selected : selected - (range.end - range.start) + 1, range.end - range.start);
         render();
