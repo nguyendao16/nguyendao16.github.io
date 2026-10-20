@@ -1,20 +1,16 @@
 {
-  "source_session": "2026-10-19",
-  "updated_at": "2026-10-20T05:52:31.371742+00:00",
-  "last_close": 57100.0,
-  "change": -1100.0,
-  "change_percent": -1.8900343642611683,
+  "source_session": "2026-10-20",
+  "updated_at": "2026-10-20T14:28:32.630088+00:00",
+  "last_close": 57400.0,
+  "change": 300.0,
+  "change_percent": 0.5253940455341506,
   "forecast": {
-    "target_session": "2026-10-20",
-    "issued_at": "2026-10-19T16:37:53.750512+00:00",
-    "expires_at": "2026-10-20T08:00:00+00:00",
+    "target_session": "2026-10-21",
+    "issued_at": "2026-10-20T14:28:32.630088+00:00",
+    "expires_at": "2026-10-21T08:00:00+00:00",
     "direction": "not_up"
   },
   "history": [
-    {
-      "date": "2026-07-23",
-      "close": 64700.0
-    },
     {
       "date": "2026-07-24",
       "close": 62900.0
@@ -250,11 +246,15 @@
     {
       "date": "2026-10-19",
       "close": 57100.0
+    },
+    {
+      "date": "2026-10-20",
+      "close": 57400.0
     }
   ],
   "performance": {
     "correct": 1,
-    "incorrect": 0,
+    "incorrect": 1,
     "pending": 1,
     "unscorable": 0
   },
@@ -265,6 +265,10 @@
     },
     {
       "date": "2026-10-20",
+      "status": "incorrect"
+    },
+    {
+      "date": "2026-10-21",
       "status": "pending"
     }
   ]
