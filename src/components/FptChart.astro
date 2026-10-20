@@ -1,7 +1,7 @@
 ---
 import Section from './Section.astro';
 import FptLineChart from './FptLineChart.astro';
-import { parseChartSummary } from '../utils/fpt-chart.mjs';
+import { parseChartSummary, predictionOutcomes } from '../utils/fpt-chart.mjs';
 import result from '../../public/fpt/summary.json';
 
 const summary = parseChartSummary(result);
@@ -13,6 +13,7 @@ const updated = new Intl.DateTimeFormat('en-US', {
 }).format(new Date(summary.updated_at));
 const tone = summary.change > 0 ? 'text-emerald-700' : summary.change < 0 ? 'text-red-700' : 'text-ink-muted';
 const forecast = summary.forecast;
+const awaiting = predictionOutcomes(summary).find((outcome) => outcome.status === 'pending' && outcome.date > summary.source_session);
 ---
 
 <Section
@@ -38,7 +39,8 @@ const forecast = summary.forecast;
             </div>
           </div>
           <div aria-live="polite" class="text-body-sm">
-            <p data-fpt-pending class="text-ink-muted">No new forecast available</p>
+            <p data-fpt-pending hidden={Boolean(awaiting)} class="text-ink-muted">No new forecast available</p>
+            <p data-fpt-awaiting hidden={!awaiting} class="text-ink-muted">{awaiting && `Awaiting result · ${date(awaiting.date)}`}</p>
             {forecast && (
               <p data-fpt-forecast hidden class:list={[
                 'rounded-button px-3 py-2 font-medium',

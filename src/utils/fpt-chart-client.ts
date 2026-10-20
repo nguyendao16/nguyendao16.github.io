@@ -1,4 +1,4 @@
-import { chartGeometry, chartWindow, isForecastCurrent, outcomeColor, outcomeLabel, parseChartSummary } from './fpt-chart.mjs';
+import { chartGeometry, chartWindow, isForecastCurrent, isForecastVisible, outcomeColor, outcomeLabel, parseChartSummary, predictionOutcomes } from './fpt-chart.mjs';
 
 export function initFptChart(chart: HTMLElement) {
   const summary = parseChartSummary(JSON.parse(chart.dataset.summary ?? 'null'));
@@ -14,6 +14,7 @@ export function initFptChart(chart: HTMLElement) {
   let geometry = chartGeometry(summary, 800, range);
   let selected = 59;
   let current = false;
+  let forecastVisible = false;
   let timer: ReturnType<typeof setTimeout>;
   let drag: { x: number; y: number; start: number; moved: boolean } | null = null;
 
@@ -30,7 +31,7 @@ export function initFptChart(chart: HTMLElement) {
     if (index === null) {
       const pending = geometry.markers.find((marker) => marker.rail);
       if (pending) tooltip.textContent = `${date(pending.date)} · ${outcomeLabel(pending.status)}`;
-      else if (current && range.end === 60 && summary.forecast) {
+      else if (forecastVisible && range.end === 60 && summary.forecast) {
         tooltip.textContent = `${date(summary.forecast.target_session)} · ${summary.forecast.direction === 'up' ? 'Forecast: Up' : 'Forecast: No increase'} · Direction only`;
       } else return hideTooltip();
       x = geometry.right;
@@ -53,7 +54,7 @@ export function initFptChart(chart: HTMLElement) {
     hideTooltip();
     selected = Math.max(range.start, Math.min(range.end - 1, selected));
     const width = Math.max(300, svg.getBoundingClientRect().width);
-    geometry = chartGeometry(summary, width, range, current);
+    geometry = chartGeometry(summary, width, range, forecastVisible);
     const { left, right, bottom, endX, endY } = geometry;
     svg.setAttribute('viewBox', `0 0 ${width} ${geometry.height}`);
     attrs('[data-fpt-line]', { d: geometry.line });
@@ -65,7 +66,8 @@ export function initFptChart(chart: HTMLElement) {
     for (const selector of ['[data-fpt-tail-title]', '[data-fpt-tail-date]', '[data-fpt-tail-note]']) {
       attrs(selector, { x: (right + endX) / 2 });
     }
-    tail.style.display = current && range.end === 60 ? '' : 'none';
+    tail.style.display = forecastVisible && range.end === 60 ? '' : 'none';
+    chart.querySelector('[data-fpt-tail-title]')!.textContent = current ? 'Forecast' : 'Pending';
     const grid = chart.querySelector('[data-fpt-grid]')!;
     grid.replaceChildren();
     const node = (name: string, attributes: Record<string, string | number>, text?: string, parent: Element = grid) => {
@@ -91,7 +93,7 @@ export function initFptChart(chart: HTMLElement) {
       node('circle', { cx: marker.x, cy: marker.y, r: 5, fill: outcomeColor(marker.status),
         stroke: 'var(--color-surface)', 'stroke-width': 2 }, undefined, group);
       node('title', {}, `${date(marker.date)} · ${outcomeLabel(marker.status)}`, group);
-      if (marker.rail && !(current && summary.forecast?.target_session === marker.date)) {
+      if (marker.rail && !(forecastVisible && summary.forecast?.target_session === marker.date)) {
         const label = { x: (right + endX) / 2, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--color-ink-muted)' };
         node('text', { ...label, y: 14 }, 'Pending', group);
         node('text', { ...label, y: 29 }, date(marker.date).slice(0, 5), group);
@@ -164,7 +166,12 @@ export function initFptChart(chart: HTMLElement) {
   const update = () => {
     clearTimeout(timer);
     current = isForecastCurrent(summary.forecast);
-    chart.querySelector<HTMLElement>('[data-fpt-pending]')!.hidden = current;
+    forecastVisible = isForecastVisible(summary);
+    const awaiting = predictionOutcomes(summary).find((outcome) => outcome.status === 'pending' && outcome.date > summary.source_session);
+    chart.querySelector<HTMLElement>('[data-fpt-pending]')!.hidden = current || Boolean(awaiting);
+    const waiting = chart.querySelector<HTMLElement>('[data-fpt-awaiting]')!;
+    waiting.hidden = current || !awaiting;
+    if (awaiting) waiting.textContent = `Awaiting result · ${date(awaiting.date)}`;
     chart.querySelectorAll<HTMLElement>('[data-fpt-forecast]').forEach((element) => { element.hidden = !current; });
     render();
     if (current && summary.forecast) timer = setTimeout(update, Math.min(Date.parse(summary.forecast.expires_at) - Date.now(), 2_147_483_647));

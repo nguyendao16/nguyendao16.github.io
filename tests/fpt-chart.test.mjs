@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { test } from 'node:test';
-import { chartGeometry, chartWindow, isForecastCurrent, outcomeColor, predictionOutcomes, parseChartSummary } from '../src/utils/fpt-chart.mjs';
+import { chartGeometry, chartWindow, isForecastCurrent, isForecastVisible, outcomeColor, predictionOutcomes, parseChartSummary } from '../src/utils/fpt-chart.mjs';
 
 const summary = {
   source_session: '2026-10-16', updated_at: '2026-10-16T10:00:00Z',
@@ -117,7 +117,8 @@ test('result markers track actual closes through zoom/pan; pending remains after
     const expired = chartGeometry({ ...result, forecast: null }, width, chartWindow(0, 60));
     assert.equal(expired.markers.at(-1).status, 'pending');
     assert.equal(expired.markers.at(-1).rail, true);
-    assert.equal(expired.markers.at(-1).y, (expired.top + expired.bottom) / 2);
+    assert.equal(expired.markers.at(-1).x, (expired.right + expired.endX) / 2);
+    assert.equal(expired.markers.at(-1).y, expired.top + 24);
     assert.equal('close' in pending, false);
     const panned = chartGeometry(result, width, chartWindow(0, 15));
     assert.deepEqual(panned.markers.map((marker) => marker.status), ['correct']);
@@ -135,6 +136,30 @@ test('forecast is valid across the weekend and expires exactly at target session
   assert.equal(isForecastCurrent(summary.forecast, Date.parse('2026-10-19T08:00:00Z')), false);
   assert.equal(isForecastCurrent(summary.forecast, Date.parse('2026-10-16T09:59:59Z')), false);
   assert.equal(isForecastCurrent(null), false);
+});
+
+test('pending without a drawable forecast stays directly below its date label, outside the price plot', () => {
+  const result = { ...summary, forecast: null, outcomes: [{ date: summary.forecast.target_session, status: 'pending' }] };
+  for (const width of [342, 1024]) {
+    const geometry = chartGeometry(result, width, chartWindow(0, 60), false);
+    const pending = geometry.markers.find((marker) => marker.rail);
+    assert.ok(pending);
+    assert.equal(pending.x, (geometry.right + geometry.endX) / 2, 'Pending dot must align with its date label');
+    assert.ok(pending.y > 29 && pending.y <= geometry.top + 30, 'Pending without a close belongs below the date, not halfway down the price plot');
+  }
+});
+
+test('issued direction remains visible after close while pending, until a result replaces it', () => {
+  const result = { ...summary, outcomes: [{ date: summary.forecast.target_session, status: 'pending' }] };
+  const closed = Date.parse(summary.forecast.expires_at);
+  assert.equal(isForecastVisible(result, closed - 1), true);
+  assert.equal(isForecastCurrent(result.forecast, closed), false);
+  assert.equal(isForecastVisible(result, closed), true);
+  assert.equal(isForecastVisible(result, closed + 86400000), true);
+  assert.equal(isForecastVisible({ ...result, outcomes: [] }, closed), false);
+  assert.equal(isForecastVisible({ ...result, forecast: null }, closed), false);
+  assert.equal(isForecastVisible(result, Date.parse(result.forecast.issued_at) - 1), false);
+  assert.equal(isForecastVisible(summary, closed), true);
 });
 
 test('home places the chart before latest posts and keeps the model workflow note in English', () => {

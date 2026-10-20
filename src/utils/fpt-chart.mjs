@@ -83,6 +83,14 @@ export function isForecastCurrent(forecast, now = Date.now()) {
   return Boolean(forecast && Date.parse(forecast.issued_at) <= now && now < Date.parse(forecast.expires_at));
 }
 
+/** Keep an issued direction visible until its pending result is published. @param {ChartSummary} summary @param {number} [now] */
+export function isForecastVisible(summary, now = Date.now()) {
+  const forecast = summary.forecast;
+  return Boolean(forecast && Date.parse(forecast.issued_at) <= now
+    && (isForecastCurrent(forecast, now) || predictionOutcomes(summary)
+      .some((outcome) => outcome.date === forecast.target_session && outcome.status === 'pending')));
+}
+
 /** Keep zooming and dragging inside the published window. @param {number} start @param {number} count */
 export function chartWindow(start, count) {
   count = Math.max(5, Math.min(60, Math.round(count)));
@@ -90,8 +98,8 @@ export function chartWindow(start, count) {
   return { start, end: start + count };
 }
 
-/** @param {ChartSummary} summary @param {number} width @param {{start: number, end: number}} range @param {boolean} [current] */
-export function chartGeometry(summary, width, range, current = false) {
+/** @param {ChartSummary} summary @param {number} width @param {{start: number, end: number}} range @param {boolean} [forecastVisible] */
+export function chartGeometry(summary, width, range, forecastVisible = false) {
   const height = 300;
   const left = 58, right = width - (width < 500 ? 88 : 116), top = 30, bottom = height - 32;
   const points = summary.history.slice(range.start, range.end);
@@ -112,8 +120,9 @@ export function chartGeometry(summary, width, range, current = false) {
     const index = points.findIndex((point) => point.date === outcome.date);
     if (index >= 0) return [{ ...outcome, ...coordinates[index], rail: false }];
     if (range.end !== 60 || outcome.date <= summary.source_session) return [];
-    return [{ ...outcome, x: endX,
-      y: current && summary.forecast?.target_session === outcome.date ? endY : (top + bottom) / 2, rail: true }];
+    const onTail = forecastVisible && summary.forecast?.target_session === outcome.date;
+    return [{ ...outcome, x: onTail ? endX : (right + endX) / 2,
+      y: onTail ? endY : top + 24, rail: true }];
   });
   return {
     width, height, left, right, top, bottom, points, markers, endX, endY,
