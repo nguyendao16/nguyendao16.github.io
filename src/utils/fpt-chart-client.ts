@@ -59,7 +59,6 @@ export function initFptChart(chart: HTMLElement) {
     attrs('[data-fpt-line]', { d: geometry.line });
     attrs('[data-fpt-area]', { d: geometry.area });
     const last = geometry.coordinates.at(-1)!;
-    attrs('[data-fpt-endpoint]', { cx: last.x, cy: last.y });
     attrs('[data-fpt-divider]', { x1: right, x2: right });
     attrs('[data-fpt-tail-line]', { d: `M${right},${last.y} L${endX},${endY}` });
     attrs('[data-fpt-tail-area]', { d: `M${right},${last.y} L${endX},${endY} L${endX},${bottom} L${right},${bottom} Z` });

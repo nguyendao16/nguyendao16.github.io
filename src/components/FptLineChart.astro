@@ -40,7 +40,6 @@ const shortDate = (date: string) => `${date.slice(5, 7)}/${date.slice(8, 10)}`;
       </g>
       <path data-fpt-area d={geometry.area} fill="url(#fpt-history-fill)" />
       <path data-fpt-line d={geometry.line} fill="none" stroke={geometry.color} stroke-width="2" stroke-linejoin="round" />
-      <circle data-fpt-endpoint cx={geometry.coordinates[59].x} cy={geometry.coordinates[59].y} r="3.5" fill={geometry.color} />
       <line data-fpt-divider x1={geometry.right} x2={geometry.right} y1="26" y2={geometry.bottom} stroke="var(--color-outline-variant)" stroke-dasharray="3 5" />
       <g data-fpt-tail style="display: none;">
         <path data-fpt-tail-area fill="url(#fpt-forecast-fill)" />
