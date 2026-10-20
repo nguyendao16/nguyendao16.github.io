@@ -1,6 +1,6 @@
 {
   "source_session": "2026-10-19",
-  "updated_at": "2026-10-19T16:37:53.750512+00:00",
+  "updated_at": "2026-10-20T05:52:31.371742+00:00",
   "last_close": 57100.0,
   "change": -1100.0,
   "change_percent": -1.8900343642611683,
@@ -257,5 +257,15 @@
     "incorrect": 0,
     "pending": 1,
     "unscorable": 0
-  }
+  },
+  "outcomes": [
+    {
+      "date": "2026-10-19",
+      "status": "correct"
+    },
+    {
+      "date": "2026-10-20",
+      "status": "pending"
+    }
+  ]
 }
