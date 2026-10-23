@@ -1,118 +1,147 @@
-# AI CV Portfolio Blog
+# AI Engineer Portfolio & Technical Blog – Website portfolio và blog kỹ thuật
 
-Astro site for a machine learning and computer vision portfolio with a technical blog.
+**Website portfolio tĩnh xây dựng bằng Astro, giới thiệu kiến thức và dự án AI, các bài viết kỹ thuật cùng một giao diện công khai theo dõi kết quả dự đoán xu hướng giá cổ phiếu FPT.**
 
-## Local development
+**Website:** [nguyendao16.github.io](https://nguyendao16.github.io/)  
+**Công nghệ:** Astro | TypeScript | Tailwind CSS | MDX | KaTeX | GitHub Actions
+
+Mục tiêu của website là giúp người xem có thể kiểm chứng công việc kỹ thuật: đọc bài viết, xem mô tả dự án và quan sát kết quả dự đoán đã được công bố mà không cần truy cập mã nguồn huấn luyện, dataset hoặc thông tin xác thực trong hệ thống private.
+
+## Điểm nổi bật
+
+- **Portfolio định hướng AI:** Giới thiệu bản thân, kinh nghiệm, dự án, kỹ năng, CV và thông tin liên hệ.
+- **Blog kỹ thuật:** Bài viết Markdown/MDX, syntax highlighting và công thức toán bằng LaTeX.
+- **Theo dõi dự đoán FPT:** Biểu đồ trình bày 60 phiên giao dịch gần nhất đã được công bố và hướng của dự đoán được phát hành.
+- **Kết quả minh bạch:** Phân biệt dự đoán đúng, sai, đang chờ đánh giá và không thể đánh giá.
+- **Triển khai tĩnh:** Sử dụng GitHub Actions để deploy lên GitHub Pages; biểu đồ không cần backend inference công khai.
+- **Biểu đồ hỗ trợ tương tác và khả năng truy cập:** Hover/touch, điều khiển bằng bàn phím, pan/zoom có giới hạn và tùy chọn giảm hiệu ứng chuyển động.
+
+## Kiến trúc hệ thống
+
+```mermaid
+flowchart LR
+    A["Dữ liệu hồ sơ và dự án"] --> D["Astro static build"]
+    B["Bài viết MDX"] --> D
+    C["Public FPT summary.json"] --> D
+    D --> E["GitHub Pages"]
+    F["Pipeline mô hình FPT private"] -->|"Chỉ xuất dữ liệu được cho phép"| C
+    G["GitHub Actions deploy"] --> D
+```
+
+Website public và pipeline dự đoán cổ phiếu private là hai dự án được tách riêng có chủ đích. Repository này chỉ **hiển thị kết quả đã được xuất bản**, không trực tiếp thực thi mô hình dự đoán trong thời gian thực.
+
+## Giao diện theo dõi dự đoán FPT
+
+Thành phần FPT trong [`src/components/FptChart.astro`](src/components/FptChart.astro) đọc dữ liệu từ [`public/fpt/summary.json`](public/fpt/summary.json). Logic kiểm tra dữ liệu, tính tọa độ và xử lý tương tác được đặt trong [`src/utils/`](src/utils/).
+
+### Ranh giới dữ liệu public
+
+Hợp đồng dữ liệu (data contract) của file JSON chỉ cho phép công khai những thông tin cần thiết cho biểu đồ, bao gồm:
+
+- Chính xác **60** bản ghi `{date, close}` được sắp xếp theo ngày.
+- Giá đóng cửa mới nhất, mức thay đổi và các mốc thời gian cập nhật/nguồn dữ liệu.
+- **Hướng dự đoán**, ngày phát hành, ngày mục tiêu và thời điểm hết hiệu lực (nếu có dự đoán).
+- Số lượng dự đoán tổng hợp theo 4 trạng thái: `correct`, `incorrect`, `pending` và `unscorable`.
+- Các marker trạng thái theo ngày, giới hạn trong khoảng thời gian đang hiển thị.
+
+Dữ liệu public **không bao gồm** trọng số mô hình, feature huấn luyện, xác suất nội bộ, thông tin xác thực hoặc toàn bộ lịch sử dự đoán private. Workflow private chỉ xuất ra artifact theo danh sách trường được phép; website sẽ kiểm tra hợp đồng dữ liệu trước khi hiển thị.
+
+### Cách diễn giải biểu đồ
+
+Đường liền thể hiện **giá đóng cửa thực tế**. Đoạn nét đứt chỉ biểu thị **hướng dự đoán**, không phải giá mục tiêu hay mức lợi nhuận dự kiến. Các dự đoán đang chờ kết quả vẫn được ghi là `pending` và không tính là đúng hoặc sai cho đến khi pipeline private công bố nhãn kết quả. Website phân biệt rõ dự đoán đã thực sự phát hành với kết quả backtest giả định.
+
+Dự án minh họa cách thiết kế data contract, kiểm soát dữ liệu công khai, trực quan hóa trung thực và tích hợp CI/CD. **Đây không phải hệ thống giao dịch trực tiếp hoặc lời khuyên đầu tư.**
+
+## Cấu trúc trang và nội dung
+
+```text
+src/
+  components/             # UI tái sử dụng và thành phần biểu đồ FPT
+  content/blog/           # Bài viết kỹ thuật dạng MDX
+  content/config.ts       # Schema kiểm tra frontmatter bài viết
+  data/profile.ts         # Hồ sơ cá nhân và nội dung tương tự CV
+  data/projects.ts        # Danh sách dự án portfolio
+  data/site.ts            # Nội dung giao diện và SEO
+  pages/                  # Các trang Home, About, Projects, Blog, Resume, Contact
+  styles/                 # CSS toàn cục
+  utils/                  # Tiện ích cho blog và biểu đồ FPT
+public/
+  fpt/summary.json        # Kết quả FPT được phép công khai
+  images/                 # Hình minh họa tĩnh
+  resume/resume.pdf       # File CV
+.github/workflows/deploy.yml
+tests/                    # Kiểm thử Node.js cho website và data contract
+```
+
+## Chạy website trên máy cá nhân
+
+Sử dụng Node.js 20, trùng với phiên bản được cấu hình trong workflow triển khai.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Open the local URL shown by Astro in your browser.
-
-## Build
+Chạy các bài kiểm thử, build và xem thử phiên bản production:
 
 ```bash
+node --test tests/*.test.mjs
 npm run build
+npm run preview
 ```
 
-This runs Astro type checking and produces the static site in `dist/`.
+Lệnh `npm run build` thực hiện `astro check` rồi tạo bản build tĩnh. Workflow triển khai còn chạy riêng `tests/fpt-chart.test.mjs` trước khi xuất bản.
 
-## Add a blog post
+## Đăng bài viết kỹ thuật
 
-1. Create a new `.mdx` file in `src/content/blog/`.
-2. Add frontmatter with at least:
-   - `title`
-   - `description`
-   - `date`
-   - `tags`
-3. Optional frontmatter fields:
-   - `updatedDate`
-   - `coverImage`
-   - `draft`
-   - `seoTitle`
-   - `seoDescription`
-4. Write the post in Markdown or MDX.
-5. Use these supported features directly in the post:
-   - images
-   - GIFs
-   - embedded videos
-   - LaTeX equations with `$$ ... $$`
-   - syntax-highlighted code blocks
+Thêm file `.mdx` mới vào `src/content/blog/` với frontmatter ví dụ:
 
-The blog index and dynamic post routes update automatically from the content collection.
+```mdx
+---
+title: "Tìm hiểu lan truyền gradient trong mạng RNN"
+description: "Giải thích toán học từng bước kèm ví dụ minh họa."
+date: 2026-10-23
+tags: ["deep-learning", "rnn", "mathematics"]
+---
 
-## Update projects
+Viết nội dung bài viết tại đây. Có thể thêm code và công thức:
 
-Edit `src/data/projects.ts` to change the project list shown on the Projects page and homepage preview.
-
-Each project supports:
-- title
-- description
-- problem statement
-- tech stack
-- metrics/results
-- GitHub link
-- demo link
-- image
-- tags
-
-## Deployment to GitHub Pages
-
-This repository is configured as a **GitHub user site**:
-
-`https://USERNAME.github.io`
-
-Deployment is handled by the workflow in `.github/workflows/deploy.yml`.
-
-### Required GitHub setup
-
-1. Push the repository to GitHub.
-2. In the repository settings, enable GitHub Pages.
-3. Set the Pages source to **GitHub Actions**.
-4. Push to `main` or run the workflow manually.
-
-### Important config values
-
-The Astro config in `astro.config.mjs` is already set for a user site:
-
-```js
-site: 'https://USERNAME.github.io'
-base: '/'
+$$
+\frac{\partial L}{\partial h_t}
+$$
 ```
 
-If you deploy as a **project site** instead of a user site, change these values:
+Schema cũng hỗ trợ các trường tùy chọn như ngày cập nhật, ảnh bìa, trạng thái bản nháp và thiết lập SEO. Tham khảo [`src/content/config.ts`](src/content/config.ts) và [`CONTENT_GUIDE.md`](CONTENT_GUIDE.md).
 
-```js
-site: 'https://USERNAME.github.io/REPO_NAME'
-base: '/REPO_NAME/'
-```
+## Chỉnh sửa nội dung portfolio
 
-If you change `base`, update any hardcoded root-relative links or asset paths that should live under the new base path.
+| Nội dung | File cần sửa |
+| --- | --- |
+| Tên, giới thiệu, kinh nghiệm, chứng chỉ và kỹ năng | [`src/data/profile.ts`](src/data/profile.ts) |
+| Mô tả và đường dẫn các dự án | [`src/data/projects.ts`](src/data/projects.ts) |
+| Nội dung giao diện và SEO | [`src/data/site.ts`](src/data/site.ts) |
+| Thanh điều hướng | [`src/data/navigation.ts`](src/data/navigation.ts) |
+| Bài viết blog | `src/content/blog/*.mdx` |
+| File CV tải về | `public/resume/resume.pdf` |
 
-### Deployment flow
+Những chỉ số được đưa lên portfolio cần có nguồn kiểm chứng từ báo cáo hoặc thực nghiệm có thể tái lập. **Không sử dụng các giá trị ví dụ làm kết quả đo thực tế.**
 
-The GitHub Actions workflow:
-1. checks out the repo
-2. installs dependencies with `npm ci`
-3. runs `npm run build`
-4. uploads the `dist/` folder
-5. deploys the artifact to GitHub Pages
+## Triển khai lên GitHub Pages
 
-## FPT chart on the homepage
+Workflow tại [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) chạy khi có cập nhật trên nhánh `main` hoặc được kích hoạt thủ công. Workflow cài đặt dependency, kiểm tra hợp đồng dữ liệu FPT, build website, upload bản build tĩnh và deploy lên GitHub Pages.
 
-The chart appears above “Latest posts”. It shows 60 sessions of actual closing prices; the latest close compared with that session's official reference sets the whole history region's color. The dashed tail shows only the model's direction, without inventing a target price or return. “No increase” includes both a decline and an unchanged price.
+1. Bật **GitHub Pages**, chọn nguồn deploy là **GitHub Actions**.
+2. Kiểm tra và đặt đúng địa chỉ `site` trong [`astro.config.mjs`](astro.config.mjs).
+3. Push lên `main`, sau đó kiểm tra kết quả ở tab Actions.
 
-The private `nguyendao16/stock-predict` workflow publishes one file, `public/fpt/summary.json`: exactly 60 ordered `{date, close}` points, the latest price/change, source/update dates, forecast direction/issue/expiry dates, aggregate prediction counts, and `outcomes`: only `{date, status}` for issued predictions in the visible 60-session window plus the next pending target. The exporter uses a field allowlist; no older prices, OHLCV, per-session reference prices, model files, features, internal probabilities, forecast ledger or credentials are published. The website validates this contract during the build and in the browser.
+Pipeline xuất bản FPT sử dụng một **deploy key chuyên dụng có quyền ghi** và lưu khóa bí mật ở phía repository **private**; không lưu personal access token trong repo website public. Tuyệt đối không commit private key hoặc credentials huấn luyện.
 
-The website draws an SVG line with no charting dependency. Hover or touch shows the session date and actual close; Ctrl+wheel zooms, and horizontal dragging pans inside the 60 published sessions. Arrow keys inspect points, +/− zoom and Home resets. No older history is fetched. The static line remains available without JavaScript; interaction and the forecast marker require JavaScript.
+## Kiểm thử và độ tin cậy
 
-The browser keeps the issued directional tail visible while its target result is pending, including after that session closes and when returning to an old tab. After close the header says “Awaiting result” and the panel says “Pending”, rather than presenting it as a new forecast. A gray dot pulses gently every two seconds at the tail's endpoint until the pipeline publishes the result. If no issued direction is available, the pending dot sits directly below its date label in the separate panel without a price scale; it never implies a price. The tail and future marker appear only when the latest session is in view. Reduced-motion preferences disable the pulse. Correct/incorrect issued predictions have green/red dots at the actual target session's close, with a white outline and textual tooltip available by mouse, touch or keyboard. Unscorable predictions receive no correct/incorrect dot. Counts cover the whole ledger, so the visible dots need not sum to the totals. New releases appear on a page load after the normal Pages deployment. A failed refresh leaves the previous published result intact. Visitors can download the 60 public points and accumulate snapshots over time; this is a display window, not a restriction on saving public data.
+Các bài test trong [`tests/`](tests/) kiểm tra một phần mô hình nội dung, cấu trúc website và hành vi của biểu đồ FPT. Đặc biệt, test biểu đồ xác minh danh sách trường JSON được phép, cửa sổ 60 phiên, trạng thái dự đoán đang chờ/hết hạn, các marker kết quả và giới hạn pan/zoom.
 
-Automatic publication uses a dedicated SSH write deploy key for this repository. Its private half is stored only as `FPT_SITE_DEPLOY_KEY` in the **private stock-predict repository's Actions secrets**; the website needs no private-repository access. Do not store a personal GitHub token in the workflow. After a successful weekly CD, and at 16:30/18:30 Vietnam time on weekdays, the private workflow refreshes prices, runs inference, and commits the public result window. The existing Pages workflow handles that commit.
+Đường biểu diễn tĩnh vẫn xuất hiện khi không có JavaScript phía trình duyệt; các tương tác nâng cao cần JavaScript.
 
-Validate chart parsing and expiry with `node --test tests/fpt-chart.test.mjs`; run `npm run build` for Astro type checking and the static build.
+## Tác giả
 
-The counter beside the chart (below it on mobile) shows correct/incorrect totals across all forecasts actually issued by the pipeline. Pending and unscorable sessions are excluded from both totals. The private pipeline scores the original forecasts after each target session closes and its label is available, then publishes only four `performance` counts: `correct`, `incorrect`, `pending`, `unscorable`. It includes earlier model versions, never backtests or hypothetical forecasts; rerunning does not double-count records.
-
+Website được xây dựng và duy trì bởi [Đào Khôi Nguyên](https://github.com/nguyendao16). Repository hiện chưa khai báo giấy phép mã nguồn mở ở cấp thư mục gốc.
